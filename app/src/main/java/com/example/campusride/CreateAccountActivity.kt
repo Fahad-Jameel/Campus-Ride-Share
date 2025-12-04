@@ -76,10 +76,10 @@ class CreateAccountActivity : AppCompatActivity() {
     }
     
     private fun performRegistration() {
-        val name = binding.nameInput.text?.toString()?.trim() ?: ""
-        val email = binding.emailInput.text?.toString()?.trim() ?: ""
-        val phone = binding.phoneInput.text?.toString()?.trim() ?: ""
-        val affiliation = binding.affiliationInput.text?.toString()?.trim() ?: ""
+        val name = binding.fullNameInput.text?.toString()?.trim() ?: ""
+        val email = binding.universityEmailInput.text?.toString()?.trim() ?: ""
+        val phone = "" // Using empty for now - will add field later
+        val affiliation = "" // Using empty for now - will add field later  
         val password = binding.passwordInput.text?.toString() ?: ""
         val confirmPassword = binding.confirmPasswordInput.text?.toString() ?: ""
         

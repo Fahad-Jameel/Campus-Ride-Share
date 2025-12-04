@@ -9,6 +9,10 @@ interface MessageDao {
     @Query("SELECT * FROM messages WHERE chatId = :chatId ORDER BY timestamp ASC")
     fun getMessagesForChat(chatId: String): Flow<List<Message>>
     
+    // Alias for repository compatibility
+    @Query("SELECT * FROM messages WHERE chatId = :chatId ORDER BY timestamp ASC")
+    fun getMessagesByChat(chatId: String): Flow<List<Message>>
+    
     @Query("SELECT * FROM messages WHERE id = :messageId")
     fun getMessageById(messageId: String): Flow<Message?>
     

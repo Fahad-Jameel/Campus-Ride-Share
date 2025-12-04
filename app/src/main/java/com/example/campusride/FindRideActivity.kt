@@ -89,7 +89,7 @@ class FindRideActivity : AppCompatActivity() {
                     Toast.makeText(this@FindRideActivity, "Search failed: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@FindRideActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

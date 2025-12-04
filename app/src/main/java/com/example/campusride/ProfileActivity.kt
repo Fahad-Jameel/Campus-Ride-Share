@@ -98,8 +98,8 @@ class ProfileActivity : AppCompatActivity() {
     private fun performLogout() {
         // Clear user session
         prefsHelper.setLoggedIn(false)
-        prefsHelper.saveUserId(null)
-        prefsHelper.saveUserEmail(null)
+        prefsHelper.saveUserId("")
+        prefsHelper.saveUserEmail("")
 
         Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
 

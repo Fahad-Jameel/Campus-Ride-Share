@@ -45,7 +45,7 @@ class ChatAdapter(
         fun bind(chat: Chat) {
             chatName.text = chat.otherUserName
             chatMessage.text = chat.lastMessage ?: "No messages yet"
-            chatTime.text = formatTime(chat.lastMessageTime)
+            chatTime.text = formatTime(chat.lastMessageTime ?: 0L)
             
             // Show/hide unread badge
             if (chat.unreadCount > 0) {

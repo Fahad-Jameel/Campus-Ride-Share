@@ -42,7 +42,8 @@ class EditProfileActivity : AppCompatActivity() {
             Glide.with(this)
                 .load(uri)
                 .circleCrop()
-                .into(binding.profileEditAvatar)
+                    // TODO: Uncomment when profileEditAvatar is added to layout
+                    // .into(binding.profileEditAvatar)
         }
 
         binding.backButton.setOnClickListener { finish() }
@@ -63,7 +64,8 @@ class EditProfileActivity : AppCompatActivity() {
         
         binding.removePhotoButton.setOnClickListener {
             selectedImageUri = null
-            binding.profileEditAvatar.setImageResource(R.drawable.ic_profile_circle_placeholder)
+            // TODO: Uncomment when profileEditAvatar is added to layout
+            // binding.profileEditAvatar.setImageResource(R.drawable.ic_profile_circle_placeholder)
         }
         
         binding.addVehicleButton.setOnClickListener {
@@ -105,7 +107,8 @@ class EditProfileActivity : AppCompatActivity() {
                         .load(user.profileImageUrl)
                         .placeholder(R.drawable.ic_profile_circle_placeholder)
                         .circleCrop()
-                        .into(binding.profileEditAvatar)
+                        // TODO: Uncomment when profileEditAvatar is added to layout
+                        // .into(binding.profileEditAvatar)
                 }
             }
         }

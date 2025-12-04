@@ -8,6 +8,35 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:665645795742:android:d9ec4c9fc543490f22ae8f",
+        "android_client_info": {
+          "package_name": "com.example.campusride"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665645795742-4c38v68cn25c1non1u5f65qvtgnhmuo7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8EysLQzt5WGSHOPT3UFxoy1SvcU6d5Og"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665645795742-4c38v68cn25c1non1u5f65qvtgnhmuo7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:665645795742:android:de8e8ab410a6774c22ae8f",
         "android_client_info": {
           "package_name": "com.example.firebase"

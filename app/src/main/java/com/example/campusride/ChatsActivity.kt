@@ -90,7 +90,7 @@ class ChatsActivity : AppCompatActivity() {
                 0 -> {
                     binding.chatItem1.chatName.text = chat.otherUserName
                     binding.chatItem1.chatMessage.text = chat.lastMessage ?: "No messages yet"
-                    binding.chatItem1.chatTime.text = formatTime(chat.lastMessageTime)
+                    binding.chatItem1.chatTime.text = formatTime(chat.lastMessageTime ?: 0L)
                     if (chat.unreadCount > 0) {
                         binding.chatItem1.chatBadge.visibility = View.VISIBLE
                         binding.chatItem1.chatBadge.text = chat.unreadCount.toString()
@@ -101,19 +101,19 @@ class ChatsActivity : AppCompatActivity() {
                 1 -> {
                     binding.chatItem2.chatName.text = chat.otherUserName
                     binding.chatItem2.chatMessage.text = chat.lastMessage ?: "No messages yet"
-                    binding.chatItem2.chatTime.text = formatTime(chat.lastMessageTime)
+                    binding.chatItem2.chatTime.text = formatTime(chat.lastMessageTime ?: 0L)
                     binding.chatItem2.chatBadge.visibility = if (chat.unreadCount > 0) View.VISIBLE else View.GONE
                 }
                 2 -> {
                     binding.chatItem3.chatName.text = chat.otherUserName
                     binding.chatItem3.chatMessage.text = chat.lastMessage ?: "No messages yet"
-                    binding.chatItem3.chatTime.text = formatTime(chat.lastMessageTime)
+                    binding.chatItem3.chatTime.text = formatTime(chat.lastMessageTime ?: 0L)
                     binding.chatItem3.chatBadge.visibility = if (chat.unreadCount > 0) View.VISIBLE else View.GONE
                 }
                 3 -> {
                     binding.chatItem4.chatName.text = chat.otherUserName
                     binding.chatItem4.chatMessage.text = chat.lastMessage ?: "No messages yet"
-                    binding.chatItem4.chatTime.text = formatTime(chat.lastMessageTime)
+                    binding.chatItem4.chatTime.text = formatTime(chat.lastMessageTime ?: 0L)
                     binding.chatItem4.chatBadge.visibility = if (chat.unreadCount > 0) View.VISIBLE else View.GONE
                 }
             }
