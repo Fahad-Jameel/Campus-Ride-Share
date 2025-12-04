@@ -1,0 +1,12 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/home_badge_green" />
+    <corners android:radius="16dp" />
+    <padding
+        android:top="6dp"
+        android:bottom="6dp"
+        android:left="12dp"
+        android:right="12dp" />
+</shape>
+
+

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/home_surface_card"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:minHeight="80dp"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/rideAvatar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="@string/content_description_profile"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile_circle_placeholder" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/rideRoute"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/login_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="North Campus → Downtown" />
+
+            <TextView
+                android:id="@+id/rideDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/login_text_secondary"
+                android:textSize="13sp"
+                tools:text="Today • 4:30 PM • 2 seats" />
+        </LinearLayout>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/ridePrice"
+            style="@style/Widget.MaterialComponents.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/home_badge_green"
+            app:chipCornerRadius="16dp"
+            app:chipIconSize="0dp"
+            app:chipMinHeight="32dp"
+            app:closeIconEnabled="false"
+            android:paddingHorizontal="12dp"
+            android:textColor="@color/home_badge_green_text"
+            android:textStyle="bold"
+            tools:text="$4" />
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>
+

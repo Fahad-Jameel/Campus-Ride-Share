@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "665645795742",
+    "firebase_url": "https://smd-cs-default-rtdb.firebaseio.com",
+    "project_id": "smd-cs",
+    "storage_bucket": "smd-cs.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:665645795742:android:de8e8ab410a6774c22ae8f",
+        "android_client_info": {
+          "package_name": "com.example.firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "665645795742-4c38v68cn25c1non1u5f65qvtgnhmuo7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8EysLQzt5WGSHOPT3UFxoy1SvcU6d5Og"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "665645795742-4c38v68cn25c1non1u5f65qvtgnhmuo7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

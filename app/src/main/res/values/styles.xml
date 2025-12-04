@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Campus.Button.Primary" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_primary_button</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="cornerRadius">28dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconTint">@color/white</item>
+        <item name="iconPadding">16dp</item>
+    </style>
+
+    <style name="Widget.Campus.Button.Chip" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_chip_green</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/splash_green_chip_text</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:drawablePadding">12dp</item>
+        <item name="cornerRadius">24dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconGravity">textStart</item>
+        <item name="iconTint">@color/splash_green_chip_text</item>
+        <item name="iconPadding">12dp</item>
+    </style>
+
+    <style name="Widget.Campus.Button.Chip.Blue" parent="Widget.Campus.Button.Chip">
+        <item name="android:background">@drawable/bg_chip_blue</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+
+    <style name="Widget.Campus.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense">
+        <item name="boxBackgroundColor">@color/login_blue_input</item>
+        <item name="boxStrokeColor">@color/login_blue_input_stroke</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="startIconTint">@color/login_text_secondary</item>
+        <item name="hintTextColor">@color/login_text_secondary</item>
+        <item name="android:textColorHint">@color/login_text_secondary</item>
+        <item name="android:padding">0dp</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Campus.TextField</item>
+    </style>
+
+    <style name="Widget.Campus.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.FilledBox.Dense">
+        <item name="android:textColor">@color/login_text_primary</item>
+        <item name="android:textColorHint">@color/login_text_secondary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="ShapeAppearance.Campus.TextField" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">16dp</item>
+        <item name="cornerSizeTopRight">16dp</item>
+        <item name="cornerSizeBottomLeft">16dp</item>
+        <item name="cornerSizeBottomRight">16dp</item>
+    </style>
+
+    <style name="Widget.Campus.Button.Field" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_field_chip</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/login_text_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconTint">@color/login_text_primary</item>
+        <item name="iconPadding">12dp</item>
+        <item name="cornerRadius">20dp</item>
+    </style>
+
+    <style name="Widget.Campus.IconButton.Surface" parent="Widget.MaterialComponents.Button.Icon">
+        <item name="android:background">@drawable/bg_icon_button</item>
+        <item name="backgroundTint">@null</item>
+        <item name="iconPadding">0dp</item>
+        <item name="iconTint">@color/login_text_primary</item>
+        <item name="android:minWidth">48dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="Widget.Campus.BottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+        <item name="android:background">@color/home_surface_primary</item>
+        <item name="itemIconTint">@color/bottom_nav_icon_selector</item>
+        <item name="itemTextColor">@color/bottom_nav_icon_selector</item>
+        <item name="itemRippleColor">@android:color/transparent</item>
+        <item name="labelVisibilityMode">labeled</item>
+        <item name="android:elevation">8dp</item>
+    </style>
+
+    <style name="Widget.Campus.Button.Action" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/bg_action_button</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="iconPadding">12dp</item>
+        <item name="iconTint">@color/white</item>
+    </style>
+</resources>
+

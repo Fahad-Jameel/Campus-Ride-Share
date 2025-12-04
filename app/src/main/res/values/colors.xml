@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="splash_blue_dark">#041C45</color>
+    <color name="splash_blue_mid">#07285A</color>
+    <color name="splash_blue_light">#0A3D7E</color>
+    <color name="splash_green_primary">#1ED660</color>
+    <color name="splash_green_chip">#13C155</color>
+    <color name="splash_green_chip_text">#062951</color>
+    <color name="splash_blue_chip">#0D3D7D</color>
+    <color name="splash_progress_track">#164D93</color>
+
+    <color name="login_blue_dark">#021532</color>
+    <color name="login_blue_card">#04224E</color>
+    <color name="login_blue_input">#021C41</color>
+    <color name="login_blue_input_stroke">#073569</color>
+    <color name="login_text_primary">#F2F6FF</color>
+    <color name="login_text_secondary">#96A8C6</color>
+    <color name="login_link_text">#46B4FF</color>
+    <color name="login_checkbox_unchecked">#093064</color>
+    <color name="login_checkbox_checked">#1ED660</color>
+    <color name="login_footer_pill">#063870</color>
+
+    <color name="home_surface_primary">#03244F</color>
+    <color name="home_surface_card">#062F63</color>
+    <color name="home_surface_card_alt">#08356E</color>
+    <color name="home_map_border">#0D4BA0</color>
+    <color name="home_badge_green">#1ED660</color>
+    <color name="home_badge_green_text">#06325C</color>
+    <color name="home_chip_blue">#0E3F82</color>
+    <color name="home_divider">#0C3A7A</color>
+    <color name="home_price_green">#19D66F</color>
+</resources>

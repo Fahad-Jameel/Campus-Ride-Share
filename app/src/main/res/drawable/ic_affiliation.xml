@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@color/login_text_secondary"
+        android:pathData="M4,20h16v-2h-1v-6l-5,-3V4h-4v5L5,12v6H4v2zm7,-12h2v2h-2v-2zm0,4h2v5h-2v-5zm-3,0h2v5H8v-5zm6,0h2v5h-2v-5z" />
+</vector>
+
+
