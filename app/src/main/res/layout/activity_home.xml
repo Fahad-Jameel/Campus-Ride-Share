@@ -135,13 +135,10 @@
                 app:strokeColor="@color/home_map_border"
                 app:strokeWidth="1dp">
 
-                <ImageView
-                    android:id="@+id/mapPreview"
+                <org.osmdroid.views.MapView
+                    android:id="@+id/mapView"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:background="@drawable/bg_map_placeholder"
-                    android:contentDescription="@string/content_description_map_preview"
-                    android:scaleType="centerCrop" />
+                    android:layout_height="200dp" />
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.button.MaterialButton

@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
     // Backend URL - Using laptop's local IP for real device access
     // Make sure your phone and laptop are on the same WiFi network
-    private const val BASE_URL = "http://192.168.18.133/campus-ride-api/"
+    private const val BASE_URL = "http://192.168.18.84/campus-ride-api/"
     
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

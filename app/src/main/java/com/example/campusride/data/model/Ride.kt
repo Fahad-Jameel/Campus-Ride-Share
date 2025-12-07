@@ -23,6 +23,7 @@ data class Ride(
     val vehicleId: String? = null,
     val vehicleModel: String? = null,
     val preferences: List<String> = emptyList(), // e.g., "Music", "Food", "No Smoking"
+    val expiryTime: Long? = null, // Time when ride offer expires
     val createdAt: Long = System.currentTimeMillis(),
     val lastSyncedAt: Long? = null
 )

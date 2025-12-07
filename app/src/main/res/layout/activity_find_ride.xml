@@ -47,13 +47,19 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/mapPreview"
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="@drawable/bg_map_placeholder"
-                android:contentDescription="@string/content_description_map_preview"
-                android:scaleType="centerCrop" />
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/home_surface_card"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
+
+                <org.osmdroid.views.MapView
+                    android:id="@+id/mapView"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp" />
+            </com.google.android.material.card.MaterialCardView>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -83,14 +89,27 @@
                             android:contentDescription="@string/home_pickup_hint"
                             android:src="@drawable/ic_location_pin" />
 
-                        <TextView
+                        <EditText
+                  android:id="@+id/pickupInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:layout_weight="1"
-                            android:text="@string/find_pickup_hint"
+                            android:hint="@string/find_pickup_hint"
                             android:textColor="@color/login_text_primary"
-                            android:textSize="16sp" />
+                            android:textColorHint="@color/login_text_secondary"
+                            android:textSize="16sp"
+                            android:background="@android:color/transparent"
+                            android:inputType="text" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/selectPickupButton"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Map"
+                            android:textColor="@color/home_badge_green_text"
+                            android:textSize="12sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -106,17 +125,30 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:contentDescription="@string/find_destination_hint"
-                            android:src="@drawable/ic_destination" />
+                            android:contentDescription="@string/home_dropoff_hint"
+                            android:src="@drawable/ic_location_pin" />
 
-                        <TextView
+                        <EditText
+                            android:id="@+id/destinationInput"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:layout_weight="1"
-                            android:text="@string/find_destination_hint"
+                            android:hint="@string/find_destination_hint"
                             android:textColor="@color/login_text_primary"
-                            android:textSize="16sp" />
+                            android:textColorHint="@color/login_text_secondary"
+                            android:textSize="16sp"
+                            android:background="@android:color/transparent"
+                            android:inputType="text" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/selectDestinationButton"
+                            style="@style/Widget.MaterialComponents.Button.TextButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Map"
+                            android:textColor="@color/home_badge_green_text"
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -144,11 +176,14 @@
                             android:src="@drawable/ic_calendar" />
 
                         <TextView
+                            android:id="@+id/dateButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:text="@string/find_date_hint"
                             android:textColor="@color/login_text_primary"
+                            android:clickable="true"
+                            android:focusable="true"
                             android:textSize="16sp" />
                     </LinearLayout>
 
@@ -169,11 +204,14 @@
                             android:src="@drawable/ic_clock" />
 
                         <TextView
+                            android:id="@+id/timeButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="12dp"
                             android:text="@string/find_time_hint"
                             android:textColor="@color/login_text_primary"
+                            android:clickable="true"
+                            android:focusable="true"
                             android:textSize="16sp" />
                     </LinearLayout>
                 </LinearLayout>

@@ -80,6 +80,9 @@ dependencies {
     implementation("com.google.firebase:firebase-database-ktx")
     implementation("com.google.firebase:firebase-auth-ktx")
     
+    // OpenStreetMap (osmdroid) - Free maps without API key
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
