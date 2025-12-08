@@ -22,13 +22,15 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.Marker
+import com.example.campusride.data.model.Ride
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var userRepository: UserRepository
     private lateinit var rideRepository: RideRepository
+    private lateinit var userRepository: UserRepository
     private lateinit var prefsHelper: SharedPreferencesHelper
+    private var currentRides: List<Ride> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,6 +144,9 @@ class HomeActivity : AppCompatActivity() {
                 val availableRides = allRides.filter { ride ->
                     ride.availableSeats > 0
                 }.take(3) // Show top 3 available rides
+                
+                // Store currentRides for click handlers
+                currentRides = availableRides
 
                 // Display rides or show empty state
                 if (availableRides.isEmpty()) {
@@ -172,6 +177,9 @@ class HomeActivity : AppCompatActivity() {
                                     "$rideTime • ${ride.availableSeats} seats left",
                                     "PKR ${ride.cost}"
                                 )
+                                binding.rideCardOne.root.setOnClickListener {
+                                    openRideDetails(ride)
+                                }
                             }
                             1 -> {
                                 binding.rideCardTwo.root.visibility = View.VISIBLE
@@ -181,6 +189,9 @@ class HomeActivity : AppCompatActivity() {
                                     "$rideTime • ${ride.availableSeats} seats left",
                                     "PKR ${ride.cost}"
                                 )
+                                binding.rideCardTwo.root.setOnClickListener {
+                                    openRideDetails(ride)
+                                }
                             }
                             2 -> {
                                 binding.rideCardThree.root.visibility = View.VISIBLE
@@ -190,6 +201,9 @@ class HomeActivity : AppCompatActivity() {
                                     "$rideTime • ${ride.availableSeats} seats left",
                                     "PKR ${ride.cost}"
                                 )
+                                binding.rideCardThree.root.setOnClickListener {
+                                    openRideDetails(ride)
+                                }
                             }
                         }
                     }
@@ -233,7 +247,12 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupActions() {
+    private fun setupListeners() { // Renamed from setupActions()
+        // Notification bell click
+        binding.notificationIcon.setOnClickListener {
+            startActivity(Intent(this, NotificationsActivity::class.java))
+        }
+        
         binding.offerRideButton.setOnClickListener {
             startActivity(Intent(this, OfferRideActivity::class.java))
         }
@@ -251,5 +270,11 @@ class HomeActivity : AppCompatActivity() {
         cardBinding.rideRoute.text = route
         cardBinding.rideDetails.text = details
         cardBinding.ridePrice.text = price
+    }
+    
+    private fun openRideDetails(ride: Ride) {
+        val intent = Intent(this, RideDetailsActivity::class.java)
+        intent.putExtra("RIDE_DATA", ride)
+        startActivity(intent)
     }
 }

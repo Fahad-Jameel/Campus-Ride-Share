@@ -62,6 +62,23 @@ interface ApiService {
     
     @POST("messages/send_message.php")
     suspend fun sendMessage(@Body message: SendMessageRequest): Response<ApiResponse<MessageResponse>>
+    
+    // Bookings
+    @POST("bookings/create_booking.php")
+    suspend fun createBooking(@Body bookingData: Map<String, String>): Response<Map<String, Any>>
+
+    @GET("bookings/get_bookings.php")
+    suspend fun getBookingsByPassenger(@Query("passenger_id") passengerId: String): Response<List<Map<String, Any>>>
+
+    @GET("bookings/get_bookings.php")
+    suspend fun getBookingsByDriver(@Query("driver_id") driverId: String): Response<List<Map<String, Any>>>
+
+    @POST("bookings/update_booking.php")
+    suspend fun updateBookingStatus(@Query("id") bookingId: String, @Body data: Map<String, String>): Response<Map<String, Any>>
+    
+    // FCM Token
+    @POST("users/save_fcm_token.php")
+    suspend fun saveFCMToken(@Body data: Map<String, String>): Response<Map<String, Any>>
 }
 
 // Request/Response Models

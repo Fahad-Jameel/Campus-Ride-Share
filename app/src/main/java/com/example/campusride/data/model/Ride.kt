@@ -4,6 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.example.campusride.data.database.StringListConverter
+import java.io.Serializable
 
 @Entity(tableName = "rides")
 @TypeConverters(StringListConverter::class)
@@ -26,5 +27,5 @@ data class Ride(
     val expiryTime: Long? = null, // Time when ride offer expires
     val createdAt: Long = System.currentTimeMillis(),
     val lastSyncedAt: Long? = null
-)
+) : Serializable
 

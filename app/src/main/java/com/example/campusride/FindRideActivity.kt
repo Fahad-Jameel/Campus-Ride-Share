@@ -278,18 +278,27 @@ class FindRideActivity : AppCompatActivity() {
                     binding.findRideCard1.rideRoute.text = "${ride.pickupLocation} → ${ride.destination}"
                     binding.findRideCard1.rideDetails.text = "$rideTime • ${ride.availableSeats} seats"
                     binding.findRideCard1.ridePrice.text = "PKR ${ride.cost}"
+                    binding.findRideCard1.root.setOnClickListener {
+                        openRideDetails(ride)
+                    }
                 }
                 1 -> {
                     binding.findRideCard2.root.visibility = View.VISIBLE
                     binding.findRideCard2.rideRoute.text = "${ride.pickupLocation} → ${ride.destination}"
                     binding.findRideCard2.rideDetails.text = "$rideTime • ${ride.availableSeats} seats"
                     binding.findRideCard2.ridePrice.text = "PKR ${ride.cost}"
+                    binding.findRideCard2.root.setOnClickListener {
+                        openRideDetails(ride)
+                    }
                 }
                 2 -> {
                     binding.findRideCard3.root.visibility = View.VISIBLE
                     binding.findRideCard3.rideRoute.text = "${ride.pickupLocation} → ${ride.destination}"
                     binding.findRideCard3.rideDetails.text = "$rideTime • ${ride.availableSeats} seats"
                     binding.findRideCard3.ridePrice.text = "PKR ${ride.cost}"
+                    binding.findRideCard3.root.setOnClickListener {
+                        openRideDetails(ride)
+                    }
                 }
             }
         }
@@ -350,6 +359,12 @@ class FindRideActivity : AppCompatActivity() {
         
         // Return in priority order
         return exactMatches + pickupMatches + destMatches + others
+    }
+    
+    private fun openRideDetails(ride: Ride) {
+        val intent = Intent(this, RideDetailsActivity::class.java)
+        intent.putExtra("RIDE_DATA", ride)
+        startActivity(intent)
     }
 
     override fun onResume() {

@@ -15,6 +15,7 @@ class SharedPreferencesHelper(context: Context) {
         private const val KEY_AUTH_TOKEN = "auth_token"
         private const val KEY_IS_LOGGED_IN = "is_logged_in"
         private const val KEY_LAST_SYNC_TIME = "last_sync_time"
+        private const val KEY_FCM_TOKEN = "fcm_token"
     }
     
     fun saveUserId(userId: String) {
@@ -46,6 +47,12 @@ class SharedPreferencesHelper(context: Context) {
     }
     
     fun getLastSyncTime(): Long = prefs.getLong(KEY_LAST_SYNC_TIME, 0)
+    
+    fun saveFCMToken(token: String) {
+        prefs.edit().putString(KEY_FCM_TOKEN, token).apply()
+    }
+    
+    fun getFCMToken(): String? = prefs.getString(KEY_FCM_TOKEN, null)
     
     fun clear() {
         prefs.edit().clear().apply()
