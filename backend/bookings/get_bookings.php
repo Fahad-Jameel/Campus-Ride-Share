@@ -9,6 +9,8 @@ $passenger_id = isset($_GET['passenger_id']) ? $_GET['passenger_id'] : null;
 $driver_id = isset($_GET['driver_id']) ? $_GET['driver_id'] : null;
 
 try {
+    $conn = getDBConnection();
+    
     if ($passenger_id) {
         // Get bookings for passenger with ride details
         $query = "SELECT 
@@ -23,11 +25,11 @@ try {
                     r.vehicle_model
                   FROM bookings b
                   LEFT JOIN rides r ON b.ride_id = r.id
-                  WHERE b.passenger_id = :passenger_id
+                  WHERE b.passenger_id = ?
                   ORDER BY b.created_at DESC";
         
-        $stmt = $pdo->prepare($query);
-        $stmt->bindParam(":passenger_id", $passenger_id);
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $passenger_id);
         
     } elseif ($driver_id) {
         // Get bookings for driver's rides
@@ -44,25 +46,34 @@ try {
                   FROM bookings b
                   LEFT JOIN rides r ON b.ride_id = r.id
                   LEFT JOIN users u ON b.passenger_id = u.id
-                  WHERE r.driver_id = :driver_id
+                  WHERE r.driver_id = ?
                   ORDER BY b.created_at DESC";
         
-        $stmt = $pdo->prepare($query);
-        $stmt->bindParam(":driver_id", $driver_id);
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $driver_id);
         
     } else {
         http_response_code(400);
         echo json_encode(array("success" => false, "message" => "passenger_id or driver_id required"));
+        $conn->close();
         exit();
     }
     
     $stmt->execute();
-    $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->get_result();
+    
+    $bookings = [];
+    while ($row = $result->fetch_assoc()) {
+        $bookings[] = $row;
+    }
     
     http_response_code(200);
     echo json_encode($bookings);
     
-} catch (PDOException $e) {
+    $stmt->close();
+    $conn->close();
+    
+} catch (Exception $e) {
     http_response_code(500);
     echo json_encode(array("success" => false, "message" => "Database error: " . $e->getMessage()));
 }

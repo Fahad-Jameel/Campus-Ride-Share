@@ -101,7 +101,7 @@ if (
                     
                     if (!empty($fcm_token)) {
                         // Send push notification
-                        require_once __DIR__ . '/../api/notifications/send_fcm_notification.php';
+                        require_once __DIR__ . '/../notifications/send_fcm_notification.php';
                         
                         $title = "New Booking Request";
                         $body = "$passenger_name requested {$data->seats_requested} seat(s) for your ride from {$ride_data['pickup_location']} to {$ride_data['destination']}";

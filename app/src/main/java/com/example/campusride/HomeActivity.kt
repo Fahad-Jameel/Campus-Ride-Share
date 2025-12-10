@@ -79,6 +79,27 @@ class HomeActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         binding.mapView.onResume()
+        // Refresh notifications badge if needed
+        refreshNotificationsBadge()
+    }
+    
+    private fun refreshNotificationsBadge() {
+        val userId = prefsHelper.getUserId()
+        if (userId.isNullOrEmpty()) return
+        
+        lifecycleScope.launch {
+            try {
+                val notificationRepository = com.example.campusride.data.repository.NotificationRepository(this@HomeActivity)
+                val result = notificationRepository.getNotifications(userId)
+                result.onSuccess { notifications ->
+                    val unreadCount = notifications.count { !it.isRead }
+                    // You can update a badge here if you have one in the UI
+                    // For now, we'll just ensure notifications are loaded
+                }
+            } catch (e: Exception) {
+                // Silently fail
+            }
+        }
     }
 
     override fun onPause() {

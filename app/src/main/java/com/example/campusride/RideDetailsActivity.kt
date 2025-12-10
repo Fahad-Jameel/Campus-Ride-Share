@@ -136,7 +136,8 @@ class RideDetailsActivity : AppCompatActivity() {
                             "Booking request sent successfully!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        finish()
+                        // Update UI to show pending status
+                        showBookingStatus("pending")
                     }.onFailure { error ->
                         Toast.makeText(
                             this@RideDetailsActivity,

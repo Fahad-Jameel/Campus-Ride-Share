@@ -30,6 +30,10 @@ class NotificationsActivity : AppCompatActivity() {
 
         setupUI()
         setupRecyclerView()
+    }
+    
+    override fun onResume() {
+        super.onResume()
         loadNotifications()
     }
 
