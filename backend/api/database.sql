@@ -107,3 +107,4 @@ CREATE TABLE IF NOT EXISTS ride_bookings (
     INDEX idx_passenger_id (passenger_id)
 );
 
+

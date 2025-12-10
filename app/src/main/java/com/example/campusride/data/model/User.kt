@@ -17,3 +17,4 @@ data class User(
     val lastSyncedAt: Long? = null
 )
 
+

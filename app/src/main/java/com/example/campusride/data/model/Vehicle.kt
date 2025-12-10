@@ -18,3 +18,4 @@ data class Vehicle(
     val lastSyncedAt: Long? = null
 )
 
+

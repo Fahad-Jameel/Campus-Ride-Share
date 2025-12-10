@@ -227,3 +227,4 @@ syncService.syncAllData(userId)
 - **Backend**: PHP, MySQL, RESTful API
 - **Architecture**: Repository Pattern, MVVM-ready structure
 
+

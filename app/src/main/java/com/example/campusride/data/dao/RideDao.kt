@@ -34,3 +34,4 @@ interface RideDao {
     suspend fun deleteAllRides()
 }
 
+

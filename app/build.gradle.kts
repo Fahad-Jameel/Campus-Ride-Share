@@ -81,8 +81,14 @@ dependencies {
     implementation("com.google.firebase:firebase-storage-ktx")
     implementation("com.google.firebase:firebase-messaging-ktx")
     
-    // OpenStreetMap (osmdroid) - Free maps without API key
+    // Maps - OSMDroid (currently used, working)
     implementation("org.osmdroid:osmdroid-android:6.1.18")
+    
+    // MapLibre - Available for future migration
+    // implementation("org.maplibre.gl:android-sdk:11.5.1")
+    
+    // Location Services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

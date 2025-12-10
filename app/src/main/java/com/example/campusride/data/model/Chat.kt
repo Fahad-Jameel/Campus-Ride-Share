@@ -18,3 +18,4 @@ data class Chat(
     val lastSyncedAt: Long? = null
 )
 
+

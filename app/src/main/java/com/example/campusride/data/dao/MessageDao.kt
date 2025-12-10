@@ -32,3 +32,4 @@ interface MessageDao {
     suspend fun markMessagesAsRead(chatId: String, userId: String)
 }
 
+

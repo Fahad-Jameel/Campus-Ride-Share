@@ -22,3 +22,4 @@ interface VehicleDao {
     suspend fun deleteVehicle(vehicle: Vehicle)
 }
 
+
