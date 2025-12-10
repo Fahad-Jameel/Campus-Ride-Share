@@ -114,6 +114,21 @@ class CreateAccountActivity : AppCompatActivity() {
                 prefsHelper.saveUserEmail(user.email)
                 prefsHelper.setLoggedIn(true)
                 
+                // Send FCM token to server
+                val fcmToken = prefsHelper.getFCMToken()
+                if (!fcmToken.isNullOrEmpty()) {
+                    try {
+                        val apiService = com.example.campusride.data.api.RetrofitClient.apiService
+                        val data = mapOf(
+                            "userId" to user.id,
+                            "fcmToken" to fcmToken
+                        )
+                        apiService.saveFCMToken(data)
+                    } catch (e: Exception) {
+                        // Silently fail - token will be sent on next app start
+                    }
+                }
+                
                 Toast.makeText(this@CreateAccountActivity, "Account created successfully!", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this@CreateAccountActivity, HomeActivity::class.java))
                 finish()

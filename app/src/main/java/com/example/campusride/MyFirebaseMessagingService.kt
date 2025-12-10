@@ -11,6 +11,9 @@ import androidx.core.app.NotificationCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.example.campusride.util.SharedPreferencesHelper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -18,11 +21,36 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onNewToken(token)
         Log.d(TAG, "FCM Token: $token")
         
-        // Save token to backend
+        // Save token locally
         val prefsHelper = SharedPreferencesHelper(this)
         prefsHelper.saveFCMToken(token)
         
-        // TODO: Send token to server when user is logged in
+        // Send token to server if user is logged in
+        val userId = prefsHelper.getUserId()
+        if (!userId.isNullOrEmpty()) {
+            sendTokenToServer(userId, token)
+        }
+    }
+    
+    private fun sendTokenToServer(userId: String, token: String) {
+        // Use coroutines to send token to server
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val apiService = com.example.campusride.data.api.RetrofitClient.apiService
+                val data = mapOf(
+                    "userId" to userId,
+                    "fcmToken" to token
+                )
+                val response = apiService.saveFCMToken(data)
+                if (response.isSuccessful) {
+                    Log.d(TAG, "FCM token saved to server successfully")
+                } else {
+                    Log.e(TAG, "Failed to save FCM token to server")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error saving FCM token to server: ${e.message}")
+            }
+        }
     }
 
     override fun onMessageReceived(message: RemoteMessage) {

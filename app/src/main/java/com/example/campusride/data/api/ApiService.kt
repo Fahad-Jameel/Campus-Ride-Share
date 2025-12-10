@@ -79,6 +79,13 @@ interface ApiService {
     // FCM Token
     @POST("users/save_fcm_token.php")
     suspend fun saveFCMToken(@Body data: Map<String, String>): Response<Map<String, Any>>
+    
+    // Notifications
+    @GET("notifications/get_notifications.php")
+    suspend fun getNotifications(@Query("userId") userId: String): Response<NotificationsApiResponse>
+    
+    @POST("notifications/mark_read.php")
+    suspend fun markNotificationRead(@Body data: Map<String, String>): Response<Map<String, Any>>
 }
 
 // Request/Response Models
@@ -178,6 +185,25 @@ data class MessagesApiResponse(
     val success: Boolean,
     val error: String? = null,
     val messages: List<MessageResponse>? = null
+)
+
+data class NotificationsApiResponse(
+    val success: Boolean,
+    val error: String? = null,
+    val notifications: List<NotificationResponse>? = null,
+    val unreadCount: Int = 0
+)
+
+data class NotificationResponse(
+    val id: String,
+    val userId: String,
+    val type: String,
+    val title: String,
+    val message: String,
+    val bookingId: String? = null,
+    val rideId: String? = null,
+    val isRead: Boolean = false,
+    val createdAt: Long
 )
 
 data class UserResponse(

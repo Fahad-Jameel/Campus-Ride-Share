@@ -52,7 +52,7 @@ class HomeActivity : AppCompatActivity() {
         loadUserProfile()
         setupMap()
         setupBottomNavigation()
-        setupActions()
+        setupListeners()
         loadAvailableRides()
     }
 
