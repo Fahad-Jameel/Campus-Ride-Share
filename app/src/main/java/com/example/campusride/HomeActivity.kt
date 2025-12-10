@@ -53,7 +53,7 @@ class HomeActivity : AppCompatActivity() {
         setupMap()
         setupBottomNavigation()
         setupListeners()
-        loadAvailableRides()
+        syncAndLoadRides()
     }
 
     private fun setupMap() {
@@ -156,6 +156,25 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
+    private fun syncAndLoadRides() {
+        lifecycleScope.launch {
+            try {
+                // First sync rides from server (wait for it to complete)
+                val syncResult = rideRepository.syncRidesFromServer()
+                syncResult.onSuccess {
+                    // Sync successful, now load from local database
+                    loadAvailableRides()
+                }.onFailure {
+                    // Sync failed, still try to load from local database
+                    loadAvailableRides()
+                }
+            } catch (e: Exception) {
+                // If sync fails, still try to load from local database
+                loadAvailableRides()
+            }
+        }
+    }
+    
     private fun loadAvailableRides() {
         lifecycleScope.launch {
             try {

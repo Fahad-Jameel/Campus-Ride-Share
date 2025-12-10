@@ -224,12 +224,28 @@ class FindRideActivity : AppCompatActivity() {
     private fun loadAvailableRides() {
         lifecycleScope.launch {
             try {
-                val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
-                val filteredRides = filterActiveRides(allRides).take(3)
-                
-                displayRides(filteredRides)
+                // First sync rides from server (wait for it to complete)
+                val syncResult = rideRepository.syncRidesFromServer()
+                syncResult.onSuccess {
+                    // Sync successful, now load from local database
+                    val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
+                    val filteredRides = filterActiveRides(allRides).take(3)
+                    displayRides(filteredRides)
+                }.onFailure {
+                    // Sync failed, still try to load from local database
+                    val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
+                    val filteredRides = filterActiveRides(allRides).take(3)
+                    displayRides(filteredRides)
+                }
             } catch (e: Exception) {
-                Toast.makeText(this@FindRideActivity, "Error loading rides", Toast.LENGTH_SHORT).show()
+                // If sync fails, still try to load from local database
+                try {
+                    val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
+                    val filteredRides = filterActiveRides(allRides).take(3)
+                    displayRides(filteredRides)
+                } catch (e2: Exception) {
+                    Toast.makeText(this@FindRideActivity, "Error loading rides", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -264,7 +280,13 @@ class FindRideActivity : AppCompatActivity() {
         rides.forEachIndexed { index, ride ->
             val dateFormat = SimpleDateFormat("MMM dd, h:mm a", Locale.getDefault())
             val rideTime = try {
-                val dateTimeStr = "${ride.date} ${ride.time}"
+                // Handle both "HH:mm" and "HH:mm:ss" formats
+                val timeStr = if (ride.time.length > 5) {
+                    ride.time.substring(0, 5) // Take only HH:mm part
+                } else {
+                    ride.time
+                }
+                val dateTimeStr = "${ride.date} $timeStr"
                 val parser = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 val date = parser.parse(dateTimeStr)
                 date?.let { dateFormat.format(it) } ?: "${ride.date} ${ride.time}"
@@ -313,9 +335,8 @@ class FindRideActivity : AppCompatActivity() {
     private fun filterActiveRides(rides: List<Ride>): List<Ride> {
         val now = System.currentTimeMillis()
         return rides.filter { ride ->
-            ride.availableSeats > 0 && 
-            (ride.expiryTime == null || ride.expiryTime > now)
-        }
+            ride.availableSeats > 0 && isRideNotExpired(ride, now)
+        }.sortedByDescending { it.createdAt } // Show latest first
     }
 
     private fun filterAndSortRides(
@@ -327,9 +348,8 @@ class FindRideActivity : AppCompatActivity() {
         
         // Filter out expired and full rides
         val activeRides = allRides.filter { ride ->
-            ride.availableSeats > 0 && 
-            (ride.expiryTime == null || ride.expiryTime > now)
-        }
+            ride.availableSeats > 0 && isRideNotExpired(ride, now)
+        }.sortedByDescending { it.createdAt } // Show latest first
         
         if (pickup.isNullOrEmpty() && destination.isNullOrEmpty()) {
             return activeRides
@@ -375,5 +395,28 @@ class FindRideActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         binding.mapView.onPause()
+    }
+    
+    private fun isRideNotExpired(ride: Ride, currentTime: Long): Boolean {
+        // Check expiryTime if set
+        if (ride.expiryTime != null) {
+            return ride.expiryTime!! > currentTime
+        }
+        
+        // Otherwise check date+time
+        // Handle both "HH:mm" and "HH:mm:ss" formats
+        return try {
+            val timeStr = if (ride.time.length > 5) {
+                ride.time.substring(0, 5) // Take only HH:mm part
+            } else {
+                ride.time
+            }
+            val dateTimeStr = "${ride.date} $timeStr"
+            val parser = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val rideDate = parser.parse(dateTimeStr)
+            (rideDate?.time ?: Long.MAX_VALUE) > currentTime
+        } catch (e: Exception) {
+            true // If parsing fails, don't filter it out
+        }
     }
 }

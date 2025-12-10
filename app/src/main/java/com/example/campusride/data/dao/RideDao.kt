@@ -15,7 +15,7 @@ interface RideDao {
     @Query("SELECT * FROM rides WHERE driverId = :driverId ORDER BY createdAt DESC")
     fun getRidesByDriver(driverId: String): Flow<List<Ride>>
     
-    @Query("SELECT * FROM rides WHERE pickupLocation LIKE '%' || :query || '%' OR destination LIKE '%' || :query || '%'")
+    @Query("SELECT * FROM rides WHERE pickupLocation LIKE '%' || :query || '%' OR destination LIKE '%' || :query || '%' ORDER BY createdAt DESC")
     fun searchRides(query: String): Flow<List<Ride>>
     
     @Insert(onConflict = OnConflictStrategy.REPLACE)

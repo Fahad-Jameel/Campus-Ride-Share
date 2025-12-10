@@ -14,9 +14,56 @@ class RideRepository(context: Context) {
     private val db = CampusRideDatabase.getDatabase(context)
     private val rideDao = db.rideDao()
     
-    fun getAllRides(): Flow<List<Ride>> = rideDao.getAllRides()
+    fun getAllRides(): Flow<List<Ride>> = rideDao.getAllRides().map { 
+        // Temporarily disable expiry filtering to debug - just sort by latest
+        it.sortedByDescending { it.createdAt }
+    }
     
-    fun searchRides(query: String): Flow<List<Ride>> = rideDao.searchRides(query)
+    fun searchRides(query: String): Flow<List<Ride>> = rideDao.searchRides(query).map { 
+        // Temporarily disable expiry filtering to debug - just sort by latest
+        it.sortedByDescending { it.createdAt }
+    }
+    
+    private fun filterExpiredRides(rides: List<Ride>): List<Ride> {
+        val currentTime = System.currentTimeMillis()
+        return rides.filter { ride ->
+            // Check if ride has expired - ride is valid if its date+time is in the future
+            // But be lenient - if parsing fails, include the ride
+            try {
+                val rideDateTime = getRideDateTime(ride)
+                // Only filter if we successfully parsed and it's clearly in the past
+                if (rideDateTime == Long.MAX_VALUE) {
+                    true // Include if parsing failed
+                } else {
+                    rideDateTime > currentTime
+                }
+            } catch (e: Exception) {
+                true // Include if any error occurs
+            }
+        }.sortedByDescending { it.createdAt } // Show latest first
+    }
+    
+    private fun getRideDateTime(ride: Ride): Long {
+        return try {
+            // If expiryTime is set, use it
+            if (ride.expiryTime != null) {
+                return ride.expiryTime!!
+            }
+            // Otherwise parse date and time to create timestamp
+            // Handle both "HH:mm" and "HH:mm:ss" formats
+            val timeStr = if (ride.time.length > 5) {
+                ride.time.substring(0, 5) // Take only HH:mm part
+            } else {
+                ride.time
+            }
+            val dateTimeStr = "${ride.date} $timeStr"
+            val parser = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
+            val date = parser.parse(dateTimeStr)
+            date?.time ?: Long.MAX_VALUE // If parsing fails, don't filter it out
+        } catch (e: Exception) {
+            Long.MAX_VALUE // If parsing fails, don't filter it out
+        }
+    }
     
     suspend fun syncRidesFromServer(
         pickup: String? = null,
