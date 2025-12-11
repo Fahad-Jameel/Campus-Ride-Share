@@ -29,16 +29,27 @@ class MessageRepository(context: Context) {
     suspend fun syncMessagesFromServer(chatId: String): Result<List<Message>> {
         return try {
             val response = apiService.getMessages(chatId)
-            if (response.isSuccessful && response.body()?.success == true) {
-                val messages = response.body()?.messages?.map { it.toMessage() } ?: emptyList()
-                val syncedMessages = messages.map { it.copy(lastSyncedAt = System.currentTimeMillis()) }
-                
-                // Insert messages into local database
-                messageDao.insertMessages(syncedMessages)
-                
-                Result.success(syncedMessages)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.success == true) {
+                    val messages = body.messages?.map { it.toMessage() } ?: emptyList()
+                    val syncedMessages = messages.map { it.copy(lastSyncedAt = System.currentTimeMillis()) }
+                    
+                    // Insert messages into local database
+                    messageDao.insertMessages(syncedMessages)
+                    
+                    Result.success(syncedMessages)
+                } else {
+                    val errorMsg = body?.error ?: response.message() ?: "Failed to fetch messages"
+                    Result.failure(Exception(errorMsg))
+                }
             } else {
-                Result.failure(Exception(response.body()?.error ?: "Failed to fetch messages"))
+                val errorMsg = try {
+                    response.errorBody()?.string() ?: response.message() ?: "Unknown error"
+                } catch (e: Exception) {
+                    response.message() ?: "HTTP ${response.code()}"
+                }
+                Result.failure(Exception("HTTP ${response.code()}: $errorMsg"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -104,6 +115,54 @@ class MessageRepository(context: Context) {
     }
     
     /**
+     * Edit a message
+     */
+    suspend fun editMessage(messageId: String, newText: String): Result<Message> {
+        return try {
+            val data = mapOf(
+                "message_id" to messageId,
+                "text" to newText
+            )
+            val response = apiService.updateMessage(data)
+            if (response.isSuccessful && response.body()?.success == true) {
+                val messageResponse = response.body()?.message
+                if (messageResponse != null) {
+                    val message = messageResponse.toMessage().copy(
+                        isEdited = true,
+                        lastSyncedAt = System.currentTimeMillis()
+                    )
+                    messageDao.insertMessage(message)
+                    Result.success(message)
+                } else {
+                    Result.failure(Exception("Failed to edit message"))
+                }
+            } else {
+                Result.failure(Exception(response.body()?.error ?: "Failed to edit message"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    /**
+     * Delete a message
+     */
+    suspend fun deleteMessage(messageId: String): Result<Unit> {
+        return try {
+            val data = mapOf("message_id" to messageId)
+            val response = apiService.deleteMessage(data)
+            if (response.isSuccessful && response.body()?.success == true) {
+                messageDao.deleteMessage(messageId)
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception(response.body()?.error ?: "Failed to delete message"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    
+    /**
      * Convert API response to local Message model
      */
     private fun MessageResponse.toMessage(): Message {
@@ -115,6 +174,8 @@ class MessageRepository(context: Context) {
             text = this.text,
             imageUrl = this.imageUrl,
             isRead = this.isRead,
+            isEdited = false,
+            isDeleted = false,
             timestamp = this.timestamp
         )
     }

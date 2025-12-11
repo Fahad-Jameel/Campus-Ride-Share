@@ -7,6 +7,7 @@ import com.example.campusride.data.api.*
 import com.example.campusride.data.database.CampusRideDatabase
 import com.example.campusride.data.model.Ride
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 
 class RideRepository(context: Context) {
@@ -72,16 +73,56 @@ class RideRepository(context: Context) {
         search: String? = null
     ): Result<List<Ride>> {
         return try {
+            android.util.Log.d("RideRepository", "Starting syncRidesFromServer with params: pickup=$pickup, destination=$destination, date=$date, search=$search")
             val response = apiService.getRides(pickup, destination, date, search)
-            if (response.isSuccessful && response.body()?.success == true) {
-                val rides = response.body()?.rides?.map { it.toRide() } ?: emptyList()
-                val syncedRides = rides.map { it.copy(lastSyncedAt = System.currentTimeMillis()) }
-                rideDao.insertRides(syncedRides)
-                Result.success(syncedRides)
+            android.util.Log.d("RideRepository", "API response received: isSuccessful=${response.isSuccessful}, code=${response.code()}")
+            
+            if (response.isSuccessful) {
+                val body = response.body()
+                android.util.Log.d("RideRepository", "Response body: success=${body?.success}, rides count=${body?.rides?.size ?: 0}, error=${body?.error}")
+                
+                if (body != null && body.success == true) {
+                    val rides = body.rides?.map { it.toRide() } ?: emptyList()
+                    android.util.Log.d("RideRepository", "Converted ${rides.size} rides from API response")
+                    
+                    if (rides.isNotEmpty()) {
+                        val syncedRides = rides.map { it.copy(lastSyncedAt = System.currentTimeMillis()) }
+                        try {
+                            rideDao.insertRides(syncedRides)
+                            // Verify insertion by checking count
+                            val count = rideDao.getAllRides().firstOrNull()?.size ?: 0
+                            android.util.Log.d("RideRepository", "Synced ${rides.size} rides from server and saved to local DB. Total rides in DB: $count")
+                            Result.success(syncedRides)
+                        } catch (e: Exception) {
+                            android.util.Log.e("RideRepository", "Error inserting rides to database: ${e.message}", e)
+                            e.printStackTrace()
+                            Result.failure(e)
+                        }
+                    } else {
+                        android.util.Log.w("RideRepository", "No rides returned from server (empty list). This might mean there are no rides in the database.")
+                        // Still return success with empty list - this is not an error, just no data
+                        Result.success(emptyList())
+                    }
+                } else {
+                    val errorMsg = body?.error ?: "Response body is null or success is false"
+                    android.util.Log.e("RideRepository", "Sync failed: $errorMsg, body: $body")
+                    Result.failure(Exception(errorMsg))
+                }
             } else {
-                Result.failure(Exception(response.body()?.error ?: "Failed to fetch rides"))
+                val errorMsg = try {
+                    val errorBody = response.errorBody()?.string()
+                    android.util.Log.e("RideRepository", "Error body: $errorBody")
+                    errorBody ?: response.message() ?: "Unknown error"
+                } catch (e: Exception) {
+                    android.util.Log.e("RideRepository", "Error reading error body: ${e.message}", e)
+                    response.message() ?: "HTTP ${response.code()}"
+                }
+                android.util.Log.e("RideRepository", "HTTP error: ${response.code()} - $errorMsg")
+                Result.failure(Exception("HTTP ${response.code()}: $errorMsg"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("RideRepository", "Exception in syncRidesFromServer: ${e.message}", e)
+            e.printStackTrace()
             Result.failure(e)
         }
     }
@@ -121,23 +162,30 @@ class RideRepository(context: Context) {
     }
     
     private fun RideResponse.toRide(): Ride {
-        return Ride(
-            id = this.id,
-            driverId = this.driverId,
-            driverName = this.driverName,
-            driverImageUrl = this.driverImageUrl,
-            pickupLocation = this.pickupLocation,
-            destination = this.destination,
-            date = this.date,
-            time = this.time,
-            availableSeats = this.availableSeats,
-            totalSeats = this.totalSeats,
-            cost = this.cost,
-            vehicleId = this.vehicleId,
-            vehicleModel = this.vehicleModel,
-            preferences = this.preferences,
-            createdAt = this.createdAt
-        )
+        return try {
+            Ride(
+                id = this.id,
+                driverId = this.driverId,
+                driverName = this.driverName ?: "Unknown",
+                driverImageUrl = this.driverImageUrl,
+                pickupLocation = this.pickupLocation,
+                destination = this.destination,
+                date = this.date,
+                time = this.time,
+                availableSeats = this.availableSeats,
+                totalSeats = this.totalSeats,
+                cost = this.cost,
+                vehicleId = this.vehicleId,
+                vehicleModel = this.vehicleModel,
+                preferences = this.preferences ?: emptyList(),
+                expiryTime = null,
+                createdAt = this.createdAt,
+                lastSyncedAt = System.currentTimeMillis()
+            )
+        } catch (e: Exception) {
+            android.util.Log.e("RideRepository", "Error converting RideResponse to Ride: ${e.message}", e)
+            throw e
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 package com.example.campusride.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.example.campusride.data.api.RetrofitClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -48,12 +49,33 @@ class BookingRepository(private val context: Context) {
                     mapOf("status" to status)
                 }
                 val response = apiService.updateBookingStatus(bookingId, data)
-                if (response.isSuccessful && response.body() != null) {
-                    Result.success(response.body()!!)
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        // Check if the response indicates success
+                        val success = body["success"] as? Boolean ?: false
+                        if (success) {
+                            Result.success(body)
+                        } else {
+                            val errorMsg = body["message"] as? String ?: "Failed to update booking"
+                            Log.e("BookingRepository", "Update failed: $errorMsg")
+                            Result.failure(Exception(errorMsg))
+                        }
+                    } else {
+                        Log.e("BookingRepository", "Response body is null")
+                        Result.failure(Exception("No response from server"))
+                    }
                 } else {
-                    Result.failure(Exception("Failed to update booking"))
+                    val errorBody = try {
+                        response.errorBody()?.string() ?: response.message()
+                    } catch (e: Exception) {
+                        response.message()
+                    }
+                    Log.e("BookingRepository", "HTTP error: ${response.code()} - $errorBody")
+                    Result.failure(Exception("HTTP ${response.code()}: $errorBody"))
                 }
             } catch (e: Exception) {
+                Log.e("BookingRepository", "Exception in updateBookingStatus: ${e.message}", e)
                 Result.failure(e)
             }
         }

@@ -50,12 +50,14 @@
         </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/chatMoreButton"
-            style="@style/Widget.Campus.IconButton.Surface"
+            android:id="@+id/endRideButton"
+            style="@style/Widget.Campus.Button.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/chats_title"
-            app:icon="@drawable/ic_settings" />
+            android:text="End Ride"
+            android:textColor="@color/white"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp" />
     </LinearLayout>
 
     <LinearLayout

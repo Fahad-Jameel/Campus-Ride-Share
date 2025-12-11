@@ -18,7 +18,8 @@ import java.util.*
  * RecyclerView adapter for displaying messages in a chat
  */
 class MessageAdapter(
-    private val currentUserId: String
+    private val currentUserId: String,
+    private val onMessageAction: (Message, String) -> Unit = { _, _ -> }
 ) : ListAdapter<Message, RecyclerView.ViewHolder>(MessageDiffCallback()) {
     
     companion object {
@@ -40,7 +41,7 @@ class MessageAdapter(
             VIEW_TYPE_SENT -> {
                 val view = LayoutInflater.from(parent.context)
                     .inflate(R.layout.item_message_sent, parent, false)
-                SentMessageViewHolder(view)
+                SentMessageViewHolder(view, onMessageAction)
             }
             else -> {
                 val view = LayoutInflater.from(parent.context)
@@ -58,13 +59,27 @@ class MessageAdapter(
         }
     }
     
-    class SentMessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class SentMessageViewHolder(
+        itemView: View,
+        private val onAction: (Message, String) -> Unit
+    ) : RecyclerView.ViewHolder(itemView) {
         private val messageText: TextView = itemView.findViewById(R.id.messageText)
         private val messageTime: TextView = itemView.findViewById(R.id.messageTime)
         private val messageImage: ImageView? = itemView.findViewById(R.id.messageImage)
         
         fun bind(message: Message) {
-            messageText.text = message.text
+            var displayText = message.text
+            if (message.isEdited) {
+                displayText += " (edited)"
+            }
+            if (message.isDeleted) {
+                displayText = "This message was deleted"
+                messageText.setTextColor(itemView.context.getColor(android.R.color.darker_gray))
+            } else {
+                messageText.setTextColor(itemView.context.getColor(android.R.color.white))
+            }
+            
+            messageText.text = displayText
             messageTime.text = formatTime(message.timestamp)
             
             // Handle image messages
@@ -76,6 +91,25 @@ class MessageAdapter(
             } else {
                 messageImage?.visibility = View.GONE
             }
+            
+            // Long press to show edit/delete options
+            itemView.setOnLongClickListener {
+                if (!message.isDeleted) {
+                    showMessageOptions(message)
+                }
+                true
+            }
+        }
+        
+        private fun showMessageOptions(message: Message) {
+            android.app.AlertDialog.Builder(itemView.context)
+                .setItems(arrayOf("Edit", "Delete")) { _, which ->
+                    when (which) {
+                        0 -> onAction(message, "edit")
+                        1 -> onAction(message, "delete")
+                    }
+                }
+                .show()
         }
     }
     
@@ -85,7 +119,18 @@ class MessageAdapter(
         private val messageImage: ImageView? = itemView.findViewById(R.id.messageImage)
         
         fun bind(message: Message) {
-            messageText.text = message.text
+            var displayText = message.text
+            if (message.isEdited) {
+                displayText += " (edited)"
+            }
+            if (message.isDeleted) {
+                displayText = "This message was deleted"
+                messageText.setTextColor(itemView.context.getColor(android.R.color.darker_gray))
+            } else {
+                messageText.setTextColor(itemView.context.getColor(android.R.color.white))
+            }
+            
+            messageText.text = displayText
             messageTime.text = formatTime(message.timestamp)
             
             // Handle image messages

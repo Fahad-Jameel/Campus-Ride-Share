@@ -14,6 +14,8 @@ data class Message(
     val imageUrl: String? = null,
     val timestamp: Long = System.currentTimeMillis(),
     val isRead: Boolean = false,
+    val isEdited: Boolean = false,
+    val isDeleted: Boolean = false,
     val lastSyncedAt: Long? = null
 )
 

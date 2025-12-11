@@ -226,26 +226,53 @@ class FindRideActivity : AppCompatActivity() {
             try {
                 // First sync rides from server (wait for it to complete)
                 val syncResult = rideRepository.syncRidesFromServer()
-                syncResult.onSuccess {
+                syncResult.onSuccess { syncedRides ->
+                    android.util.Log.d("FindRideActivity", "Synced ${syncedRides.size} rides from server")
                     // Sync successful, now load from local database
-                    val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
-                    val filteredRides = filterActiveRides(allRides).take(3)
-                    displayRides(filteredRides)
-                }.onFailure {
-                    // Sync failed, still try to load from local database
-                    val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
-                    val filteredRides = filterActiveRides(allRides).take(3)
-                    displayRides(filteredRides)
+                    loadRidesFromLocal()
+                }.onFailure { error ->
+                    // Log error but still try to load from local database
+                    android.util.Log.e("FindRideActivity", "Sync failed: ${error.message}")
+                    // Still try to load from local database
+                    loadRidesFromLocal()
                 }
             } catch (e: Exception) {
+                android.util.Log.e("FindRideActivity", "Exception in loadAvailableRides: ${e.message}", e)
                 // If sync fails, still try to load from local database
-                try {
-                    val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
-                    val filteredRides = filterActiveRides(allRides).take(3)
-                    displayRides(filteredRides)
-                } catch (e2: Exception) {
-                    Toast.makeText(this@FindRideActivity, "Error loading rides", Toast.LENGTH_SHORT).show()
-                }
+                loadRidesFromLocal()
+            }
+        }
+    }
+    
+    private suspend fun loadRidesFromLocal() {
+        try {
+            android.util.Log.d("FindRideActivity", "Loading rides from local database...")
+            val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
+            android.util.Log.d("FindRideActivity", "Loaded ${allRides.size} rides from local database")
+            
+            if (allRides.isEmpty()) {
+                android.util.Log.w("FindRideActivity", "No rides found in local database. This might mean:")
+                android.util.Log.w("FindRideActivity", "1. The API sync failed or returned no rides")
+                android.util.Log.w("FindRideActivity", "2. The database is empty")
+                android.util.Log.w("FindRideActivity", "3. There are no rides in the server database")
+            }
+            
+            val filteredRides = filterActiveRides(allRides).take(3)
+            android.util.Log.d("FindRideActivity", "Found ${filteredRides.size} active rides after filtering (out of ${allRides.size} total)")
+            
+            if (filteredRides.isEmpty()) {
+                android.util.Log.d("FindRideActivity", "No active rides found after filtering")
+                hideAllRideCards()
+            } else {
+                displayRides(filteredRides)
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("FindRideActivity", "Error loading rides from local: ${e.message}", e)
+            e.printStackTrace()
+            hideAllRideCards()
+            // Only show error if it's a real error, not just empty results
+            if (e.message?.contains("database") == true || e.message?.contains("SQL") == true) {
+                Toast.makeText(this@FindRideActivity, "Error loading rides: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

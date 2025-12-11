@@ -56,12 +56,24 @@ interface ApiService {
     @GET("chats/get_chats.php")
     suspend fun getChats(@Query("userId") userId: String): Response<ChatsApiResponse>
     
+    @POST("chats/create_chat.php")
+    suspend fun createChat(@Body data: Map<String, String>): Response<ApiResponse<ChatResponse>>
+    
+    @POST("chats/delete_chat.php")
+    suspend fun deleteChat(@Body data: Map<String, String>): Response<ApiResponse<Any>>
+    
     // Messages
     @GET("messages/get_messages.php")
     suspend fun getMessages(@Query("chatId") chatId: String): Response<MessagesApiResponse>
     
     @POST("messages/send_message.php")
     suspend fun sendMessage(@Body message: SendMessageRequest): Response<ApiResponse<MessageResponse>>
+    
+    @POST("messages/update_message.php")
+    suspend fun updateMessage(@Body data: Map<String, String>): Response<ApiResponse<MessageResponse>>
+    
+    @POST("messages/delete_message.php")
+    suspend fun deleteMessage(@Body data: Map<String, String>): Response<ApiResponse<Any>>
     
     // Bookings
     @POST("bookings/create_booking.php")

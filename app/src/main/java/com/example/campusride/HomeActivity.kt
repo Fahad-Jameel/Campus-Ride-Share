@@ -3,6 +3,7 @@ package com.example.campusride
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -82,7 +83,7 @@ class HomeActivity : AppCompatActivity() {
         // Refresh notifications badge if needed
         refreshNotificationsBadge()
     }
-    
+     
     private fun refreshNotificationsBadge() {
         val userId = prefsHelper.getUserId()
         if (userId.isNullOrEmpty()) return
@@ -159,16 +160,21 @@ class HomeActivity : AppCompatActivity() {
     private fun syncAndLoadRides() {
         lifecycleScope.launch {
             try {
+                android.util.Log.d("HomeActivity", "Starting ride sync...")
                 // First sync rides from server (wait for it to complete)
                 val syncResult = rideRepository.syncRidesFromServer()
-                syncResult.onSuccess {
+                syncResult.onSuccess { syncedRides ->
+                    android.util.Log.d("HomeActivity", "Sync successful, synced ${syncedRides.size} rides")
                     // Sync successful, now load from local database
                     loadAvailableRides()
-                }.onFailure {
-                    // Sync failed, still try to load from local database
+                }.onFailure { error ->
+                    // Log error but still try to load from local database
+                    android.util.Log.e("HomeActivity", "Ride sync failed: ${error.message}")
+                    // Still try to load from local database
                     loadAvailableRides()
                 }
             } catch (e: Exception) {
+                android.util.Log.e("HomeActivity", "Error syncing rides: ${e.message}", e)
                 // If sync fails, still try to load from local database
                 loadAvailableRides()
             }
@@ -178,12 +184,27 @@ class HomeActivity : AppCompatActivity() {
     private fun loadAvailableRides() {
         lifecycleScope.launch {
             try {
+                android.util.Log.d("HomeActivity", "Loading rides from local database...")
                 val allRides = rideRepository.searchRides("").firstOrNull() ?: emptyList()
+                android.util.Log.d("HomeActivity", "Loaded ${allRides.size} rides from local database")
+                
+                if (allRides.isEmpty()) {
+                    android.util.Log.w("HomeActivity", "No rides found in local database. This might mean:")
+                    android.util.Log.w("HomeActivity", "1. The API sync failed or returned no rides")
+                    android.util.Log.w("HomeActivity", "2. The database is empty")
+                    android.util.Log.w("HomeActivity", "3. There are no rides in the server database")
+                }
                 
                 // Filter only rides with available seats
                 val availableRides = allRides.filter { ride ->
-                    ride.availableSeats > 0
-                }.take(3) // Show top 3 available rides
+                    val hasSeats = ride.availableSeats > 0
+                    if (!hasSeats) {
+                        android.util.Log.d("HomeActivity", "Filtering out ride ${ride.id} - no available seats (${ride.availableSeats})")
+                    }
+                    hasSeats
+                }.sortedByDescending { it.createdAt }.take(3) // Show top 3 available rides, latest first
+                
+                android.util.Log.d("HomeActivity", "Found ${availableRides.size} available rides after filtering (out of ${allRides.size} total)")
                 
                 // Store currentRides for click handlers
                 currentRides = availableRides
@@ -199,8 +220,13 @@ class HomeActivity : AppCompatActivity() {
                     availableRides.forEachIndexed { index, ride ->
                         val dateFormat = SimpleDateFormat("MMM dd, h:mm a", Locale.getDefault())
                         val rideTime = try {
-                            // Parse date and time to create timestamp
-                            val dateTimeStr = "${ride.date} ${ride.time}"
+                            // Handle both "HH:mm" and "HH:mm:ss" formats
+                            val timeStr = if (ride.time.length > 5) {
+                                ride.time.substring(0, 5) // Take only HH:mm part
+                            } else {
+                                ride.time
+                            }
+                            val dateTimeStr = "${ride.date} $timeStr"
                             val parser = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                             val date = parser.parse(dateTimeStr)
                             date?.let { dateFormat.format(it) } ?: "${ride.date} ${ride.time}"
@@ -253,10 +279,15 @@ class HomeActivity : AppCompatActivity() {
                     if (availableRides.size < 2) binding.rideCardTwo.root.visibility = View.GONE
                 }
             } catch (e: Exception) {
+                android.util.Log.e("HomeActivity", "Error loading rides: ${e.message}", e)
                 // On error, hide all ride cards
                 binding.rideCardOne.root.visibility = View.GONE
                 binding.rideCardTwo.root.visibility = View.GONE
                 binding.rideCardThree.root.visibility = View.GONE
+                // Only show error if it's a real error, not just empty results
+                if (e.message?.contains("database") == true || e.message?.contains("SQL") == true) {
+                    Toast.makeText(this@HomeActivity, "Error loading rides: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

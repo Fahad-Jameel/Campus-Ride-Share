@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.campusride.adapter.MessageAdapter
+import com.example.campusride.data.model.Message
+import com.example.campusride.data.repository.ChatRepository
 import com.example.campusride.data.repository.MessageRepository
 import com.example.campusride.databinding.ActivityChatDetailBinding
 import com.example.campusride.util.SharedPreferencesHelper
@@ -16,12 +18,14 @@ class ChatDetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityChatDetailBinding
     private lateinit var messageRepository: MessageRepository
+    private lateinit var chatRepository: ChatRepository
     private lateinit var prefsHelper: SharedPreferencesHelper
     private lateinit var messageAdapter: MessageAdapter
     
     private var chatId: String? = null
     private var otherUserId: String? = null
     private var otherUserName: String? = null
+    private var editingMessageId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +33,7 @@ class ChatDetailActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         messageRepository = MessageRepository(this)
+        chatRepository = ChatRepository(this)
         prefsHelper = SharedPreferencesHelper(this)
 
         // Get chat info from intent
@@ -42,7 +47,16 @@ class ChatDetailActivity : AppCompatActivity() {
         binding.backButton.setOnClickListener { finish() }
 
         binding.sendButton.setOnClickListener {
-            sendMessage()
+            if (editingMessageId != null) {
+                updateMessage()
+            } else {
+                sendMessage()
+            }
+        }
+
+        // End Ride button
+        binding.endRideButton.setOnClickListener {
+            endRide()
         }
 
         setupRecyclerView()
@@ -52,7 +66,12 @@ class ChatDetailActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         val currentUserId = prefsHelper.getUserId() ?: ""
-        messageAdapter = MessageAdapter(currentUserId)
+        messageAdapter = MessageAdapter(currentUserId) { message, action ->
+            when (action) {
+                "edit" -> startEditingMessage(message)
+                "delete" -> deleteMessage(message.id)
+            }
+        }
         
         binding.messagesRecyclerView.apply {
             layoutManager = LinearLayoutManager(this@ChatDetailActivity).apply {
@@ -122,6 +141,90 @@ class ChatDetailActivity : AppCompatActivity() {
                 ).show()
             }
         }
+    }
+    
+    private fun startEditingMessage(message: Message) {
+        editingMessageId = message.id
+        binding.messageInput.setText(message.text)
+        binding.sendButton.text = "Update"
+    }
+    
+    private fun updateMessage() {
+        val messageText = binding.messageInput.text.toString().trim()
+        val currentMessageId = editingMessageId
+        
+        if (messageText.isEmpty() || currentMessageId == null) {
+            Toast.makeText(this, "Please enter a message", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        binding.messageInput.text?.clear()
+        editingMessageId = null
+        binding.sendButton.text = "Send"
+        
+        lifecycleScope.launch {
+            val result = messageRepository.editMessage(currentMessageId, messageText)
+            result.onSuccess {
+                Toast.makeText(this@ChatDetailActivity, "Message updated", Toast.LENGTH_SHORT).show()
+            }.onFailure { error ->
+                Toast.makeText(
+                    this@ChatDetailActivity,
+                    "Failed to update: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+    
+    private fun deleteMessage(messageId: String) {
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Delete Message")
+            .setMessage("Are you sure you want to delete this message?")
+            .setPositiveButton("Delete") { _, _ ->
+                lifecycleScope.launch {
+                    val result = messageRepository.deleteMessage(messageId)
+                    result.onSuccess {
+                        Toast.makeText(this@ChatDetailActivity, "Message deleted", Toast.LENGTH_SHORT).show()
+                    }.onFailure { error ->
+                        Toast.makeText(
+                            this@ChatDetailActivity,
+                            "Failed to delete: ${error.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+    
+    private fun endRide() {
+        val currentChatId = chatId
+        if (currentChatId == null) {
+            Toast.makeText(this, "Invalid chat", Toast.LENGTH_SHORT).show()
+            return
+        }
+        
+        android.app.AlertDialog.Builder(this)
+            .setTitle("End Ride")
+            .setMessage("Are you sure you want to end this ride? This will delete the chat and remove it from both users' chat lists.")
+            .setPositiveButton("End Ride") { _, _ ->
+                lifecycleScope.launch {
+                    val result = chatRepository.deleteChat(currentChatId)
+                    result.onSuccess {
+                        Toast.makeText(this@ChatDetailActivity, "Ride ended. Chat deleted.", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }.onFailure { error ->
+                        Toast.makeText(
+                            this@ChatDetailActivity,
+                            "Failed to end ride: ${error.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun setupBottomNav() {

@@ -8,14 +8,28 @@ class StringListConverter {
     private val gson = Gson()
     
     @TypeConverter
-    fun fromStringList(value: List<String>): String {
-        return gson.toJson(value)
+    fun fromString(value: String?): List<String> {
+        if (value == null || value.isEmpty()) {
+            return emptyList()
+        }
+        return try {
+            val listType = object : TypeToken<List<String>>() {}.type
+            gson.fromJson(value, listType) ?: emptyList()
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
     
     @TypeConverter
-    fun toStringList(value: String): List<String> {
-        val listType = object : TypeToken<List<String>>() {}.type
-        return gson.fromJson(value, listType) ?: emptyList()
+    fun toString(value: List<String>?): String {
+        if (value == null || value.isEmpty()) {
+            return "[]"
+        }
+        return try {
+            gson.toJson(value)
+        } catch (e: Exception) {
+            "[]"
+        }
     }
 }
 

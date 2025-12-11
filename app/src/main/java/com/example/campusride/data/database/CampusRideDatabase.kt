@@ -9,7 +9,7 @@ import com.example.campusride.data.model.*
 
 @Database(
     entities = [User::class, Ride::class, Vehicle::class, Chat::class, Message::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @androidx.room.TypeConverters(StringListConverter::class)
@@ -32,6 +32,7 @@ abstract class CampusRideDatabase : RoomDatabase() {
                     "campus_ride_database"
                 )
                 .fallbackToDestructiveMigration() // Handle schema changes by recreating database
+                .allowMainThreadQueries() // Allow queries on main thread for debugging (remove in production)
                 .build()
                 INSTANCE = instance
                 instance

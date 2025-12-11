@@ -18,10 +18,11 @@ define('DB_NAME', 'campus_rideshare');
 
 // Create database connection
 function getDBConnection() {
-    $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+    $conn = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
     
     if ($conn->connect_error) {
-        die(json_encode(['error' => 'Database connection failed: ' . $conn->connect_error]));
+        error_log("Database connection error: " . $conn->connect_error);
+        throw new Exception('Database connection failed: ' . $conn->connect_error);
     }
     
     $conn->set_charset("utf8mb4");

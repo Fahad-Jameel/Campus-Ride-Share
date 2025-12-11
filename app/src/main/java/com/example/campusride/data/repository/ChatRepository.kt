@@ -29,18 +29,32 @@ class ChatRepository(context: Context) {
     suspend fun syncChatsFromServer(userId: String): Result<List<Chat>> {
         return try {
             val response = apiService.getChats(userId)
-            if (response.isSuccessful && response.body()?.success == true) {
-                val chats = response.body()?.chats?.map { it.toChat() } ?: emptyList()
-                val syncedChats = chats.map { it.copy(lastSyncedAt = System.currentTimeMillis()) }
-                
-                // Insert chats into local database
-                syncedChats.forEach { chatDao.insertChat(it) }
-                
-                Result.success(syncedChats)
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null && body.success == true) {
+                    val chats = body.chats?.map { it.toChat() } ?: emptyList()
+                    val syncedChats = chats.map { it.copy(lastSyncedAt = System.currentTimeMillis()) }
+                    
+                    // Insert chats into local database
+                    syncedChats.forEach { chatDao.insertChat(it) }
+                    
+                    Result.success(syncedChats)
+                } else {
+                    val errorMsg = body?.error ?: "Response body is null or success is false"
+                    android.util.Log.e("ChatRepository", "Sync failed: $errorMsg")
+                    Result.failure(Exception(errorMsg))
+                }
             } else {
-                Result.failure(Exception(response.body()?.error ?: "Failed to fetch chats"))
+                val errorMsg = try {
+                    response.errorBody()?.string() ?: response.message() ?: "Unknown error"
+                } catch (e: Exception) {
+                    response.message() ?: "HTTP ${response.code()}"
+                }
+                android.util.Log.e("ChatRepository", "HTTP error: ${response.code()} - $errorMsg")
+                Result.failure(Exception("HTTP ${response.code()}: $errorMsg"))
             }
         } catch (e: Exception) {
+            android.util.Log.e("ChatRepository", "Exception in syncChatsFromServer: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -56,6 +70,24 @@ class ChatRepository(context: Context) {
     suspend fun updateChatLastMessage(chatId: String, lastMessage: String, lastMessageTime: Long) {
         val chat = chatDao.getChatById(chatId)
         // Update will be handled when observing the Flow
+    }
+    
+    /**
+     * Delete a chat
+     */
+    suspend fun deleteChat(chatId: String): Result<Unit> {
+        return try {
+            val data = mapOf("chat_id" to chatId)
+            val response = apiService.deleteChat(data)
+            if (response.isSuccessful && response.body()?.success == true) {
+                chatDao.deleteChat(chatId)
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception(response.body()?.error ?: "Failed to delete chat"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
     
     /**

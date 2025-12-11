@@ -101,22 +101,26 @@ class ManageBookingsActivity : AppCompatActivity() {
         
         lifecycleScope.launch {
             try {
+                android.util.Log.d("ManageBookingsActivity", "Accepting booking: $bookingId")
                 val result = bookingRepository.updateBookingStatus(bookingId, "accepted")
                 result.onSuccess {
+                    android.util.Log.d("ManageBookingsActivity", "Booking accepted successfully")
                     Toast.makeText(
                         this@ManageBookingsActivity,
                         "Booking accepted!",
                         Toast.LENGTH_SHORT
                     ).show()
                     loadBookingRequests() // Reload list
-                }.onFailure {
+                }.onFailure { error ->
+                    android.util.Log.e("ManageBookingsActivity", "Failed to accept booking: ${error.message}")
                     Toast.makeText(
                         this@ManageBookingsActivity,
-                        "Failed to accept booking",
-                        Toast.LENGTH_SHORT
+                        "Failed to accept booking: ${error.message}",
+                        Toast.LENGTH_LONG
                     ).show()
                 }
             } catch (e: Exception) {
+                android.util.Log.e("ManageBookingsActivity", "Exception accepting booking: ${e.message}", e)
                 Toast.makeText(
                     this@ManageBookingsActivity,
                     "Error: ${e.message}",

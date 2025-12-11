@@ -1,9 +1,15 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+// Handle preflight requests
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
 
 include_once '../config.php';
 
@@ -22,13 +28,19 @@ if (!$booking_id || !isset($data->status)) {
 try {
     $conn = getDBConnection();
     
+    if (!$conn) {
+        throw new Exception("Database connection failed");
+    }
+    
     // Get current booking info
-    $check_sql = "SELECT b.*, r.available_seats, r.id as ride_id, r.driver_id, r.driver_name,
+    $check_sql = "SELECT b.*, r.available_seats, r.id as ride_id, r.driver_id,
                          r.pickup_location, r.destination,
-                         u.fcm_token as passenger_token, u.name as passenger_name, u.id as passenger_id
+                         u.fcm_token as passenger_token, u.name as passenger_name, u.id as passenger_id,
+                         d.name as driver_name, d.id as driver_id_check
                   FROM bookings b 
                   LEFT JOIN rides r ON b.ride_id = r.id 
                   LEFT JOIN users u ON b.passenger_id = u.id
+                  LEFT JOIN users d ON r.driver_id = d.id
                   WHERE b.id = ?";
     $check_stmt = $conn->prepare($check_sql);
     $check_stmt->bind_param("s", $booking_id);
@@ -127,6 +139,27 @@ try {
             );
             $notif_stmt->execute();
             $notif_stmt->close();
+            
+            // Create chat between driver and passenger
+            $driver_id = $booking['driver_id'];
+            $chat_sql = "SELECT id FROM chats 
+                         WHERE (user1_id = ? AND user2_id = ?) 
+                         OR (user1_id = ? AND user2_id = ?)";
+            $chat_check_stmt = $conn->prepare($chat_sql);
+            $chat_check_stmt->bind_param("ssss", $driver_id, $passenger_id, $passenger_id, $driver_id);
+            $chat_check_stmt->execute();
+            $chat_check_result = $chat_check_stmt->get_result();
+            
+            if ($chat_check_result->num_rows == 0) {
+                // Create new chat
+                $chat_id = uniqid('chat_', true);
+                $chat_insert_sql = "INSERT INTO chats (id, user1_id, user2_id, created_at) VALUES (?, ?, ?, NOW())";
+                $chat_insert_stmt = $conn->prepare($chat_insert_sql);
+                $chat_insert_stmt->bind_param("sss", $chat_id, $driver_id, $passenger_id);
+                $chat_insert_stmt->execute();
+                $chat_insert_stmt->close();
+            }
+            $chat_check_stmt->close();
             
         } elseif ($new_status == 'rejected') {
             // Send rejection notification to passenger

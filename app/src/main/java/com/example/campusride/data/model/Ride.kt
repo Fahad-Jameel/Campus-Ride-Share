@@ -2,12 +2,9 @@ package com.example.campusride.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import com.example.campusride.data.database.StringListConverter
 import java.io.Serializable
 
 @Entity(tableName = "rides")
-@TypeConverters(StringListConverter::class)
 data class Ride(
     @PrimaryKey
     val id: String,
