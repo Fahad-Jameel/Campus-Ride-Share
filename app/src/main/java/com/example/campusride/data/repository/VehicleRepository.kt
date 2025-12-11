@@ -15,6 +15,8 @@ class VehicleRepository(context: Context) {
     
     fun getVehiclesByUser(userId: String): Flow<List<Vehicle>> = vehicleDao.getVehiclesByUser(userId)
     
+    fun getVehicleById(vehicleId: String): Flow<Vehicle?> = vehicleDao.getVehicleById(vehicleId)
+    
     suspend fun syncVehiclesFromServer(userId: String): Result<List<Vehicle>> {
         return try {
             val response = apiService.getVehicles(userId)
@@ -87,6 +89,22 @@ class VehicleRepository(context: Context) {
         } catch (e: Exception) {
             // Save locally even if sync fails
             vehicleDao.insertVehicle(vehicle)
+            Result.failure(e)
+        }
+    }
+    
+    suspend fun deleteVehicle(vehicle: Vehicle): Result<Unit> {
+        return try {
+            val response = apiService.deleteVehicle(mapOf("id" to vehicle.id))
+            if (response.isSuccessful && response.body()?.success == true) {
+                vehicleDao.deleteVehicle(vehicle)
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception(response.body()?.error ?: "Delete failed"))
+            }
+        } catch (e: Exception) {
+            // Delete locally even if sync fails
+            vehicleDao.deleteVehicle(vehicle)
             Result.failure(e)
         }
     }

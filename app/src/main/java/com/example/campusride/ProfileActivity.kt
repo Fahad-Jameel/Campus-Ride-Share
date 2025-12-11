@@ -7,14 +7,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.campusride.data.repository.UserRepository
+import com.example.campusride.data.repository.VehicleRepository
 import com.example.campusride.databinding.ActivityProfileBinding
 import com.example.campusride.util.SharedPreferencesHelper
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProfileBinding
     private lateinit var userRepository: UserRepository
+    private lateinit var vehicleRepository: VehicleRepository
     private lateinit var prefsHelper: SharedPreferencesHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +26,7 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         userRepository = UserRepository(this)
+        vehicleRepository = VehicleRepository(this)
         prefsHelper = SharedPreferencesHelper(this)
 
         binding.backButton.setOnClickListener { finish() }
@@ -45,7 +49,6 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         configureDetailItems()
-        configurePreferenceItems()
         setupBottomNav()
         loadUserProfile()
     }
@@ -62,12 +65,13 @@ class ProfileActivity : AppCompatActivity() {
         lifecycleScope.launch {
             // Try to sync from server first
             userRepository.syncUserFromServer(userId)
+            vehicleRepository.syncVehiclesFromServer(userId)
 
             // Observe user data from local database
             userRepository.getUserById(userId).collect { user ->
                 if (user != null) {
-                    // Update profile name
-                    binding.profileName.text = user.name
+                    // Update profile name - show dash if empty
+                    binding.profileName.text = user.name.ifEmpty { "-" }
 
                     // Load profile image
                     if (!user.profileImageUrl.isNullOrEmpty()) {
@@ -78,20 +82,40 @@ class ProfileActivity : AppCompatActivity() {
                             .into(binding.profileAvatar)
                     }
 
-                    // Update email
-                    binding.profileEmailRow.detailSubtitle.text = user.email
+                    // Update email - show dash if empty
+                    binding.profileEmailRow.detailSubtitle.text = user.email.ifEmpty { "-" }
 
-                    // Update phone
-                    if (!user.phone.isNullOrEmpty()) {
-                        binding.profilePhoneRow.detailSubtitle.text = user.phone
-                    }
-
-                    // Update affiliation
-                    if (!user.affiliation.isNullOrEmpty()) {
-                        // You can add affiliation display if needed
-                    }
+                    // Update phone - show dash if empty
+                    binding.profilePhoneRow.detailSubtitle.text = user.phone?.ifEmpty { null } ?: "-"
+                } else {
+                    // Show dashes if user not found
+                    binding.profileName.text = "-"
+                    binding.profileEmailRow.detailSubtitle.text = "-"
+                    binding.profilePhoneRow.detailSubtitle.text = "-"
                 }
             }
+
+            // Load vehicle data
+            val vehicles = vehicleRepository.getVehiclesByUser(userId).firstOrNull() ?: emptyList()
+            if (vehicles.isNotEmpty()) {
+                val vehicle = vehicles.first()
+                val makeModel = "${vehicle.make ?: ""} ${vehicle.model ?: ""}".trim()
+                binding.vehicleName.text = if (makeModel.isNotEmpty()) makeModel else "-"
+                
+                val metaParts = mutableListOf<String>()
+                if (vehicle.year != null && vehicle.year > 0) metaParts.add(vehicle.year.toString())
+                if (!vehicle.color.isNullOrEmpty()) metaParts.add(vehicle.color)
+                if (!vehicle.licensePlate.isNullOrEmpty()) metaParts.add(vehicle.licensePlate)
+                binding.vehicleMeta.text = if (metaParts.isNotEmpty()) metaParts.joinToString(" • ") else "-"
+            } else {
+                binding.vehicleName.text = "-"
+                binding.vehicleMeta.text = "-"
+            }
+
+            // Stats - show dashes for now (can be fetched from API later if needed)
+            binding.profileRatingValue.text = "-"
+            binding.profileRidesValue.text = "-"
+            binding.profileCarpoolValue.text = "-"
         }
     }
 
@@ -140,33 +164,11 @@ class ProfileActivity : AppCompatActivity() {
     private fun configureDetailItems() {
         binding.profileEmailRow.detailIcon.setImageResource(R.drawable.ic_mail)
         binding.profileEmailRow.detailTitle.text = getString(R.string.profile_email_label)
-        binding.profileEmailRow.detailSubtitle.text = getString(R.string.profile_email_value)
+        binding.profileEmailRow.detailSubtitle.text = "-"
 
         binding.profilePhoneRow.detailIcon.setImageResource(R.drawable.ic_phone)
         binding.profilePhoneRow.detailTitle.text = getString(R.string.profile_phone_label)
-        binding.profilePhoneRow.detailSubtitle.text = getString(R.string.profile_phone_value)
-
-        binding.profileSafetyRow.detailIcon.setImageResource(R.drawable.ic_shield_info)
-        binding.profileSafetyRow.detailTitle.text = getString(R.string.profile_safety_label)
-        binding.profileSafetyRow.detailSubtitle.text = getString(R.string.profile_safety_value)
-
-        binding.profilePaymentRow.detailIcon.setImageResource(R.drawable.ic_payment)
-        binding.profilePaymentRow.detailTitle.text = getString(R.string.profile_payment_label)
-        binding.profilePaymentRow.detailSubtitle.text = getString(R.string.profile_payment_value)
-    }
-
-    private fun configurePreferenceItems() {
-        binding.profileMusicRow.prefIcon.setImageResource(R.drawable.ic_music)
-        binding.profileMusicRow.prefTitle.text = getString(R.string.profile_preferences_music_label)
-        binding.profileMusicRow.prefSubtitle.text = getString(R.string.profile_preferences_music_value)
-
-        binding.profileFoodRow.prefIcon.setImageResource(R.drawable.ic_food)
-        binding.profileFoodRow.prefTitle.text = getString(R.string.profile_preferences_food_label)
-        binding.profileFoodRow.prefSubtitle.text = getString(R.string.profile_preferences_food_value)
-
-        binding.profileNotificationsRow.prefIcon.setImageResource(R.drawable.ic_notifications)
-        binding.profileNotificationsRow.prefTitle.text = getString(R.string.profile_preferences_notifications_label)
-        binding.profileNotificationsRow.prefSubtitle.text = getString(R.string.profile_preferences_notifications_value)
+        binding.profilePhoneRow.detailSubtitle.text = "-"
     }
 }
 

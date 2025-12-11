@@ -44,6 +44,9 @@ interface ApiService {
     @PUT("vehicles/update_vehicle.php")
     suspend fun updateVehicle(@Body vehicle: UpdateVehicleRequest): Response<ApiResponse<VehicleResponse>>
     
+    @POST("vehicles/delete_vehicle.php")
+    suspend fun deleteVehicle(@Body data: Map<String, String>): Response<ApiResponse<Any>>
+    
     // Images
     @Multipart
     @POST("images/upload.php")

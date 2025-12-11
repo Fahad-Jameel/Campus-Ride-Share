@@ -76,10 +76,11 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/vehiclePreviewText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
-                            android:text="@string/profile_vehicle_name"
+                            android:text="-"
                             android:textColor="@color/login_text_secondary"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -141,7 +142,7 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/add_vehicle_make_hint"
                                     android:background="@android:color/transparent"
-                                    android:textColor="@color/login_text_primary"
+                                    android:textColor="@color/white"
                                     android:textColorHint="@color/login_text_secondary"
                                     android:inputType="text"
                                     android:textSize="16sp" />
@@ -176,7 +177,7 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/add_vehicle_model_hint"
                                     android:background="@android:color/transparent"
-                                    android:textColor="@color/login_text_primary"
+                                    android:textColor="@color/white"
                                     android:textColorHint="@color/login_text_secondary"
                                     android:inputType="text"
                                     android:textSize="16sp" />
@@ -219,83 +220,9 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/add_vehicle_color_hint"
                                     android:background="@android:color/transparent"
-                                    android:textColor="@color/login_text_primary"
+                                    android:textColor="@color/white"
                                     android:textColorHint="@color/login_text_secondary"
                                     android:inputType="text"
-                                    android:textSize="16sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/add_vehicle_seats_label"
-                                android:textColor="@color/login_text_secondary"
-                                android:textSize="13sp" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="56dp"
-                                android:layout_marginTop="8dp"
-                                android:background="@drawable/bg_login_input_field"
-                                android:gravity="center_vertical"
-                                android:paddingStart="18dp"
-                                android:paddingEnd="18dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/add_vehicle_seats_hint"
-                                    android:textColor="@color/login_text_primary"
-                                    android:textSize="16sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="12dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/add_vehicle_plate_label"
-                                android:textColor="@color/login_text_secondary"
-                                android:textSize="13sp" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="56dp"
-                                android:layout_marginTop="8dp"
-                                android:background="@drawable/bg_login_input_field"
-                                android:gravity="center_vertical"
-                                android:paddingStart="18dp"
-                                android:paddingEnd="18dp">
-
-                                <EditText
-                                    android:id="@+id/licensePlateInput"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:hint="@string/add_vehicle_plate_hint"
-                                    android:background="@android:color/transparent"
-                                    android:textColor="@color/login_text_primary"
-                                    android:textColorHint="@color/login_text_secondary"
-                                    android:inputType="textCapCharacters"
                                     android:textSize="16sp" />
                             </LinearLayout>
                         </LinearLayout>
@@ -328,7 +255,7 @@
                                     android:layout_height="wrap_content"
                                     android:hint="@string/add_vehicle_year_hint"
                                     android:background="@android:color/transparent"
-                                    android:textColor="@color/login_text_primary"
+                                    android:textColor="@color/white"
                                     android:textColorHint="@color/login_text_secondary"
                                     android:inputType="number"
                                     android:textSize="16sp" />
@@ -336,29 +263,39 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/add_vehicle_notes_label"
-                        android:textColor="@color/login_text_secondary"
-                        android:textSize="13sp" />
-
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="68dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_login_input_field"
-                        android:gravity="center_vertical"
-                        android:paddingStart="18dp"
-                        android:paddingEnd="18dp">
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/add_vehicle_notes_hint"
-                            android:textColor="@color/login_text_primary"
-                            android:textSize="16sp" />
+                            android:text="@string/add_vehicle_plate_label"
+                            android:textColor="@color/login_text_secondary"
+                            android:textSize="13sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:layout_marginTop="8dp"
+                            android:background="@drawable/bg_login_input_field"
+                            android:gravity="center_vertical"
+                            android:paddingStart="18dp"
+                            android:paddingEnd="18dp">
+
+                            <EditText
+                                android:id="@+id/licensePlateInput"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:hint="@string/add_vehicle_plate_hint"
+                                android:background="@android:color/transparent"
+                                android:textColor="@color/login_text_primary"
+                                android:textColorHint="@color/login_text_secondary"
+                                android:inputType="textCapCharacters"
+                                android:textSize="16sp" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -372,66 +309,14 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/addVehiclePhotoButton"
+                style="@style/Widget.Campus.Button.Action"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/uploadRegistrationButton"
-                    style="@style/Widget.Campus.Button.Action"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1"
-                    android:text="@string/add_vehicle_upload_registration"
-                    app:icon="@drawable/ic_upload" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/addVehiclePhotoButton"
-                    style="@style/Widget.Campus.Button.Action"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add_vehicle_add_photo"
-                    app:icon="@drawable/ic_photo" />
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="@string/add_vehicle_default_settings"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/setDefaultButton"
-                    style="@style/Widget.Campus.Button.Action"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="12dp"
-                    android:layout_weight="1"
-                    android:text="@string/add_vehicle_set_default"
-                    app:icon="@drawable/ic_nav_offer" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/enableSafetyButton"
-                    style="@style/Widget.Campus.Button.Action"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/add_vehicle_enable_safety"
-                    app:icon="@drawable/ic_shield_info" />
-            </LinearLayout>
+                android:text="@string/add_vehicle_add_photo"
+                app:icon="@drawable/ic_photo" />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -10,22 +10,26 @@ import com.bumptech.glide.Glide
 import com.example.campusride.data.model.User
 import com.example.campusride.data.repository.ImageRepository
 import com.example.campusride.data.repository.UserRepository
+import com.example.campusride.data.repository.VehicleRepository
 import com.example.campusride.databinding.ActivityEditProfileBinding
 import com.example.campusride.util.ImagePickerHelper
 import com.example.campusride.util.SharedPreferencesHelper
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class EditProfileActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEditProfileBinding
     private lateinit var userRepository: UserRepository
+    private lateinit var vehicleRepository: VehicleRepository
     private lateinit var imageRepository: ImageRepository
     private lateinit var prefsHelper: SharedPreferencesHelper
     private lateinit var imagePicker: ImagePickerHelper
     
     private var selectedImageUri: Uri? = null
     private var currentUser: User? = null
+    private var currentVehicleId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +37,7 @@ class EditProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         userRepository = UserRepository(this)
+        vehicleRepository = VehicleRepository(this)
         imageRepository = ImageRepository(this)
         prefsHelper = SharedPreferencesHelper(this)
         
@@ -73,11 +78,46 @@ class EditProfileActivity : AppCompatActivity() {
         }
         
         binding.editVehicleButton.setOnClickListener {
-            startActivity(Intent(this, EditVehicleActivity::class.java))
+            val vehicleId = currentVehicleId
+            if (vehicleId != null) {
+                val intent = Intent(this, EditVehicleActivity::class.java)
+                intent.putExtra("VEHICLE_ID", vehicleId)
+                startActivity(intent)
+            } else {
+                Toast.makeText(this, "No vehicle to edit. Please add a vehicle first.", Toast.LENGTH_SHORT).show()
+            }
         }
 
         setupBottomNav()
         loadCurrentProfile()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refresh vehicle data when returning from Add/Edit Vehicle
+        val userId = prefsHelper.getUserId()
+        if (userId != null) {
+            lifecycleScope.launch {
+                vehicleRepository.syncVehiclesFromServer(userId)
+                val vehicles = vehicleRepository.getVehiclesByUser(userId).firstOrNull() ?: emptyList()
+                if (vehicles.isNotEmpty()) {
+                    val vehicle = vehicles.first()
+                    currentVehicleId = vehicle.id
+                    binding.vehicleName.text = "${vehicle.make} ${vehicle.model}".trim().ifEmpty { "-" }
+                    val metaParts = mutableListOf<String>()
+                    if (vehicle.year > 0) metaParts.add(vehicle.year.toString())
+                    if (!vehicle.color.isNullOrEmpty()) metaParts.add(vehicle.color)
+                    if (!vehicle.licensePlate.isNullOrEmpty()) metaParts.add(vehicle.licensePlate)
+                    binding.vehicleMeta.text = if (metaParts.isNotEmpty()) metaParts.joinToString(" • ") else "-"
+                    binding.editVehicleButton.isEnabled = true
+                } else {
+                    currentVehicleId = null
+                    binding.vehicleName.text = "-"
+                    binding.vehicleMeta.text = "-"
+                    binding.editVehicleButton.isEnabled = false
+                }
+            }
+        }
     }
 
     private fun loadCurrentProfile() {
@@ -89,6 +129,10 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
+            // Sync data from server
+            userRepository.syncUserFromServer(userId)
+            vehicleRepository.syncVehiclesFromServer(userId)
+            
             // Get user data
             val userFlow = userRepository.getUserById(userId)
             val user = userFlow.first()
@@ -99,7 +143,6 @@ class EditProfileActivity : AppCompatActivity() {
                 // Populate form with current data
                 binding.nameInput.setText(user.name)
                 binding.phoneInput.setText(user.phone ?: "")
-                // binding.affiliationInput.setText(user.affiliation ?: "")
                 
                 // Load current profile image
                 if (!user.profileImageUrl.isNullOrEmpty()) {
@@ -110,6 +153,25 @@ class EditProfileActivity : AppCompatActivity() {
                         // TODO: Uncomment when profileEditAvatar is added to layout
                         // .into(binding.profileEditAvatar)
                 }
+            }
+            
+            // Load vehicle data
+            val vehicles = vehicleRepository.getVehiclesByUser(userId).firstOrNull() ?: emptyList()
+            if (vehicles.isNotEmpty()) {
+                val vehicle = vehicles.first()
+                currentVehicleId = vehicle.id
+                binding.vehicleName.text = "${vehicle.make} ${vehicle.model}".trim().ifEmpty { "-" }
+                val metaParts = mutableListOf<String>()
+                if (vehicle.year > 0) metaParts.add(vehicle.year.toString())
+                if (!vehicle.color.isNullOrEmpty()) metaParts.add(vehicle.color)
+                if (!vehicle.licensePlate.isNullOrEmpty()) metaParts.add(vehicle.licensePlate)
+                binding.vehicleMeta.text = if (metaParts.isNotEmpty()) metaParts.joinToString(" • ") else "-"
+                binding.editVehicleButton.isEnabled = true
+            } else {
+                currentVehicleId = null
+                binding.vehicleName.text = "-"
+                binding.vehicleMeta.text = "-"
+                binding.editVehicleButton.isEnabled = false
             }
         }
     }

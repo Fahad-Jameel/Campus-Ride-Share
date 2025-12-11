@@ -83,37 +83,24 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/vehicleName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/profile_vehicle_name"
+                                android:text="-"
                                 android:textColor="@color/white"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
 
                             <TextView
+                                android:id="@+id/vehicleMeta"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="@string/edit_profile_vehicle_summary"
+                                android:text="-"
                                 android:textColor="@color/login_text_secondary"
                                 android:textSize="13sp" />
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@drawable/bg_verified_badge"
-                            android:paddingHorizontal="10dp"
-                            android:paddingVertical="4dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/edit_vehicle_default_badge"
-                                android:textColor="@color/home_badge_green_text"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
                     </LinearLayout>
 
                     <TextView
@@ -154,11 +141,15 @@
                                 android:paddingStart="18dp"
                                 android:paddingEnd="18dp">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <EditText
+                                    android:id="@+id/makeInput"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Honda"
-                                    android:textColor="@color/login_text_primary"
+                                    android:hint="@string/add_vehicle_make_hint"
+                                    android:background="@android:color/transparent"
+                                    android:textColor="@color/white"
+                                    android:textColorHint="@color/login_text_secondary"
+                                    android:inputType="text"
                                     android:textSize="16sp" />
                             </LinearLayout>
                         </LinearLayout>
@@ -185,11 +176,15 @@
                                 android:paddingStart="18dp"
                                 android:paddingEnd="18dp">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <EditText
+                                    android:id="@+id/modelInput"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Civic"
-                                    android:textColor="@color/login_text_primary"
+                                    android:hint="@string/add_vehicle_model_hint"
+                                    android:background="@android:color/transparent"
+                                    android:textColor="@color/white"
+                                    android:textColorHint="@color/login_text_secondary"
+                                    android:inputType="text"
                                     android:textSize="16sp" />
                             </LinearLayout>
                         </LinearLayout>
@@ -224,11 +219,15 @@
                                 android:paddingStart="18dp"
                                 android:paddingEnd="18dp">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <EditText
+                                    android:id="@+id/colorInput"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Blue"
-                                    android:textColor="@color/login_text_primary"
+                                    android:hint="@string/add_vehicle_color_hint"
+                                    android:background="@android:color/transparent"
+                                    android:textColor="@color/white"
+                                    android:textColorHint="@color/login_text_secondary"
+                                    android:inputType="text"
                                     android:textSize="16sp" />
                             </LinearLayout>
                         </LinearLayout>
@@ -242,7 +241,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/add_vehicle_seats_label"
+                                android:text="@string/add_vehicle_year_label"
                                 android:textColor="@color/login_text_secondary"
                                 android:textSize="13sp" />
 
@@ -255,11 +254,15 @@
                                 android:paddingStart="18dp"
                                 android:paddingEnd="18dp">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <EditText
+                                    android:id="@+id/yearInput"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="4"
-                                    android:textColor="@color/login_text_primary"
+                                    android:hint="@string/add_vehicle_year_hint"
+                                    android:background="@android:color/transparent"
+                                    android:textColor="@color/white"
+                                    android:textColorHint="@color/login_text_secondary"
+                                    android:inputType="number"
                                     android:textSize="16sp" />
                             </LinearLayout>
                         </LinearLayout>
@@ -294,157 +297,17 @@
                                 android:paddingStart="18dp"
                                 android:paddingEnd="18dp">
 
-                                <TextView
-                                    android:layout_width="wrap_content"
+                                <EditText
+                                    android:id="@+id/licensePlateInput"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/add_vehicle_plate_hint"
-                                    android:textColor="@color/login_text_primary"
+                                    android:hint="@string/add_vehicle_plate_hint"
+                                    android:background="@android:color/transparent"
+                                    android:textColor="@color/white"
+                                    android:textColorHint="@color/login_text_secondary"
+                                    android:inputType="textCapCharacters"
                                     android:textSize="16sp" />
                             </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/add_vehicle_year_label"
-                                android:textColor="@color/login_text_secondary"
-                                android:textSize="13sp" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="56dp"
-                                android:layout_marginTop="8dp"
-                                android:background="@drawable/bg_login_input_field"
-                                android:gravity="center_vertical"
-                                android:paddingStart="18dp"
-                                android:paddingEnd="18dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="2021"
-                                    android:textColor="@color/login_text_primary"
-                                    android:textSize="16sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/add_vehicle_notes_label"
-                        android:textColor="@color/login_text_secondary"
-                        android:textSize="13sp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="68dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@drawable/bg_login_input_field"
-                        android:gravity="center_vertical"
-                        android:paddingStart="18dp"
-                        android:paddingEnd="18dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Child seat available"
-                            android:textColor="@color/login_text_primary"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="24dp"
-                        android:text="@string/edit_vehicle_preferences"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_login_card"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/edit_profile_safety_kit"
-                                android:textColor="@color/white"
-                                android:textSize="15sp" />
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_verified_badge"
-                                android:paddingHorizontal="10dp"
-                                android:paddingVertical="4dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/edit_profile_enabled"
-                                    android:textColor="@color/home_badge_green_text"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginTop="12dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/bg_chip_green"
-                                android:paddingHorizontal="16dp"
-                                android:paddingVertical="8dp"
-                                android:text="@string/edit_vehicle_music_friendly"
-                                android:textColor="@color/home_badge_green_text"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:background="@drawable/bg_chip_green"
-                                android:paddingHorizontal="16dp"
-                                android:paddingVertical="8dp"
-                                android:text="@string/edit_vehicle_no_smoking"
-                                android:textColor="@color/home_badge_green_text"
-                                android:textSize="12sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:background="@drawable/bg_chip_green"
-                                android:paddingHorizontal="16dp"
-                                android:paddingVertical="8dp"
-                                android:text="@string/edit_vehicle_usb"
-                                android:textColor="@color/home_badge_green_text"
-                                android:textSize="12sp" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -457,31 +320,14 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <LinearLayout
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/updatePhotoButton"
+                        style="@style/Widget.Campus.Button.Action"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/viewRegistrationButton"
-                            style="@style/Widget.Campus.Button.Action"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="12dp"
-                            android:layout_weight="1"
-                            android:text="@string/edit_vehicle_view_registration"
-                            app:icon="@drawable/ic_upload" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/updatePhotoButton"
-                            style="@style/Widget.Campus.Button.Action"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="@string/edit_vehicle_update_photo"
-                            app:icon="@drawable/ic_photo" />
-                    </LinearLayout>
+                        android:text="@string/edit_vehicle_update_photo"
+                        app:icon="@drawable/ic_photo" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

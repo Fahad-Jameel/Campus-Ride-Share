@@ -53,7 +53,34 @@ class AddVehicleActivity : AppCompatActivity() {
             imagePicker.pickImage()
         }
 
+        // Update preview text as user types
+        binding.makeInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updatePreview()
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+        binding.modelInput.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                updatePreview()
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
         setupBottomNav()
+    }
+
+    private fun updatePreview() {
+        val make = binding.makeInput.text.toString().trim()
+        val model = binding.modelInput.text.toString().trim()
+        val preview = if (make.isNotEmpty() || model.isNotEmpty()) {
+            "$make $model".trim()
+        } else {
+            "-"
+        }
+        binding.vehiclePreviewText.text = preview
     }
 
     private fun saveVehicle() {
