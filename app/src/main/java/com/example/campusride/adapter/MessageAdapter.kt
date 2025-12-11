@@ -127,7 +127,7 @@ class MessageAdapter(
                 displayText = "This message was deleted"
                 messageText.setTextColor(itemView.context.getColor(android.R.color.darker_gray))
             } else {
-                messageText.setTextColor(itemView.context.getColor(android.R.color.white))
+                messageText.setTextColor(itemView.context.getColor(android.R.color.black))
             }
             
             messageText.text = displayText

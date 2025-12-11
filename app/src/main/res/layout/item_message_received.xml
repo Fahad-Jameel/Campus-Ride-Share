@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@drawable/bg_login_input_field"
+        android:background="@drawable/bg_message_received"
         android:padding="12dp">
 
         <TextView
@@ -18,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Message text"
-            android:textColor="@color/white"
+            android:textColor="@android:color/black"
             android:textSize="15sp" />
     </LinearLayout>
 
