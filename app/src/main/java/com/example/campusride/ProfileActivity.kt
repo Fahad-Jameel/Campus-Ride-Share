@@ -53,6 +53,17 @@ class ProfileActivity : AppCompatActivity() {
         loadUserProfile()
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Refresh vehicle data when returning to profile
+        val userId = prefsHelper.getUserId()
+        if (userId != null) {
+            lifecycleScope.launch {
+                vehicleRepository.syncVehiclesFromServer(userId)
+            }
+        }
+    }
+
     private fun loadUserProfile() {
         val userId = prefsHelper.getUserId()
         if (userId == null) {
@@ -66,8 +77,10 @@ class ProfileActivity : AppCompatActivity() {
             // Try to sync from server first
             userRepository.syncUserFromServer(userId)
             vehicleRepository.syncVehiclesFromServer(userId)
+        }
 
-            // Observe user data from local database
+        // Observe user data from local database
+        lifecycleScope.launch {
             userRepository.getUserById(userId).collect { user ->
                 if (user != null) {
                     // Update profile name - show dash if empty
@@ -94,29 +107,37 @@ class ProfileActivity : AppCompatActivity() {
                     binding.profilePhoneRow.detailSubtitle.text = "-"
                 }
             }
-
-            // Load vehicle data
-            val vehicles = vehicleRepository.getVehiclesByUser(userId).firstOrNull() ?: emptyList()
-            if (vehicles.isNotEmpty()) {
-                val vehicle = vehicles.first()
-                val makeModel = "${vehicle.make ?: ""} ${vehicle.model ?: ""}".trim()
-                binding.vehicleName.text = if (makeModel.isNotEmpty()) makeModel else "-"
-                
-                val metaParts = mutableListOf<String>()
-                if (vehicle.year != null && vehicle.year > 0) metaParts.add(vehicle.year.toString())
-                if (!vehicle.color.isNullOrEmpty()) metaParts.add(vehicle.color)
-                if (!vehicle.licensePlate.isNullOrEmpty()) metaParts.add(vehicle.licensePlate)
-                binding.vehicleMeta.text = if (metaParts.isNotEmpty()) metaParts.joinToString(" • ") else "-"
-            } else {
-                binding.vehicleName.text = "-"
-                binding.vehicleMeta.text = "-"
-            }
-
-            // Stats - show dashes for now (can be fetched from API later if needed)
-            binding.profileRatingValue.text = "-"
-            binding.profileRidesValue.text = "-"
-            binding.profileCarpoolValue.text = "-"
         }
+
+        // Observe vehicle data from local database
+        lifecycleScope.launch {
+            vehicleRepository.getVehiclesByUser(userId).collect { vehicles ->
+                if (vehicles.isNotEmpty()) {
+                    val vehicle = vehicles.first()
+                    val makeModel = "${vehicle.make ?: ""} ${vehicle.model ?: ""}".trim()
+                    binding.vehicleName.text = if (makeModel.isNotEmpty()) makeModel else "-"
+                    
+                    val metaParts = mutableListOf<String>()
+                    if (vehicle.year > 0) metaParts.add(vehicle.year.toString())
+                    if (!vehicle.color.isNullOrEmpty()) metaParts.add(vehicle.color)
+                    if (!vehicle.licensePlate.isNullOrEmpty()) metaParts.add(vehicle.licensePlate)
+                    binding.vehicleMeta.text = if (metaParts.isNotEmpty()) metaParts.joinToString(" • ") else "-"
+                    
+                    // Show vehicle card
+                    binding.vehicleCard.visibility = android.view.View.VISIBLE
+                } else {
+                    binding.vehicleName.text = "-"
+                    binding.vehicleMeta.text = "-"
+                    // Still show vehicle card but with dashes
+                    binding.vehicleCard.visibility = android.view.View.VISIBLE
+                }
+            }
+        }
+
+        // Stats - show dashes for now (can be fetched from API later if needed)
+        binding.profileRatingValue.text = "-"
+        binding.profileRidesValue.text = "-"
+        binding.profileCarpoolValue.text = "-"
     }
 
     private fun performLogout() {
